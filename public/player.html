@@ -3,58 +3,65 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Blind Test - Joueur</title>
+<title>Blind Test — Joueur</title>
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<div class="container">
-  <h1>🎵 Blind Test</h1>
+<div class="container container-narrow">
+  <header class="app-header">
+    <div class="app-header-icon">🎵</div>
+    <div>
+      <h1>Blind Test</h1>
+      <p class="app-subtitle">Écran joueur</p>
+    </div>
+  </header>
 
   <div id="joinZone" class="card">
-    <p>Code de la partie</p>
+    <p class="eyebrow">Code de la partie</p>
     <input id="codeInput" maxlength="4" placeholder="ex : 4821" inputmode="numeric" />
-    <p>Ton pseudo</p>
+    <p class="eyebrow">Ton pseudo</p>
     <input id="nameInput" maxlength="20" placeholder="ex : Cédric" />
-    <button id="joinBtn">Rejoindre la partie</button>
-    <p id="joinError" style="color:#fca5a5;"></p>
+    <button id="joinBtn" class="btn-primary btn-lg btn-block">Rejoindre la partie</button>
+    <p id="joinError" class="error-text"></p>
   </div>
 
-  <div id="waitZone" class="card" style="display:none;">
+  <div id="waitZone" class="card card-center" style="display:none;">
+    <div class="spinner" aria-hidden="true"></div>
     <p>Tu es bien connecté ! En attente du maître du jeu...</p>
   </div>
 
   <div id="questionZone" class="card" style="display:none;">
-    <div id="timerDisplay" style="display:none; text-align:center; font-size:2.2rem; font-weight:bold; color:#fbbf24;"></div>
+    <div id="timerDisplay" class="timer-display" style="display:none;"></div>
     <div class="phrase" id="phraseText"></div>
 
     <div id="libreZone" style="display:none;">
-      <p>Titre de la chanson</p>
+      <p class="eyebrow">Titre de la chanson</p>
       <input id="titleGuess" placeholder="Titre..." />
-      <p>Interprète</p>
+      <p class="eyebrow">Interprète</p>
       <input id="artistGuess" placeholder="Interprète..." />
     </div>
 
     <div id="qcmZone" style="display:none;">
-      <p>Titre de la chanson</p>
-      <div id="titleOptions" class="theme-grid"></div>
-      <p>Interprète</p>
-      <div id="artistOptions" class="theme-grid"></div>
+      <p class="eyebrow">Titre de la chanson</p>
+      <div id="titleOptions" class="option-grid"></div>
+      <p class="eyebrow">Interprète</p>
+      <div id="artistOptions" class="option-grid"></div>
     </div>
 
-    <button id="submitBtn">Envoyer ma réponse</button>
-    <p id="submittedMsg" style="display:none;">✓ Réponse envoyée</p>
+    <button id="submitBtn" class="btn-primary btn-lg btn-block">Envoyer ma réponse</button>
+    <p id="submittedMsg" class="success-text" style="display:none;">✓ Réponse envoyée</p>
   </div>
 
-  <div id="revealZone" class="card" style="display:none;">
-    <p>La bonne réponse était :</p>
+  <div id="revealZone" class="card card-center" style="display:none;">
+    <p class="eyebrow">La bonne réponse était</p>
     <h2 id="revealTitle"></h2>
-    <p id="revealArtist"></p>
+    <p class="reveal-artist" id="revealArtist"></p>
     <p class="hint">Écoute l'extrait diffusé par le maître du jeu !</p>
   </div>
 
   <div class="card">
-    <h3>🏆 Scores</h3>
-    <div id="scoreboard"></div>
+    <h3><span class="section-icon">🏆</span> Scores</h3>
+    <div id="scoreboard" class="scoreboard"></div>
   </div>
 </div>
 
@@ -87,11 +94,11 @@
 
   function renderOptions(containerId, options, onSelect) {
     const el = document.getElementById(containerId);
-    el.innerHTML = options.map((opt) => `<button class="theme-btn secondary" data-value="${opt}">${opt}</button>`).join('');
+    el.innerHTML = options.map((opt) => `<button class="option-card" data-value="${opt}"><span class="option-title">${opt}</span></button>`).join('');
     el.querySelectorAll('button').forEach((btn) => {
       btn.onclick = () => {
-        el.querySelectorAll('button').forEach((b) => b.style.outline = 'none');
-        btn.style.outline = '3px solid #fbbf24';
+        el.querySelectorAll('button').forEach((b) => b.classList.remove('is-selected'));
+        btn.classList.add('is-selected');
         onSelect(btn.dataset.value);
       };
     });
@@ -112,7 +119,7 @@
     const tick = () => {
       const remaining = Math.max(0, Math.round((endsAt - Date.now()) / 1000));
       el.textContent = `⏱ ${remaining}s`;
-      el.style.color = remaining <= 5 ? '#fca5a5' : '#fbbf24';
+      el.classList.toggle('timer-urgent', remaining <= 5);
       if (remaining <= 0) {
         stopTimer();
         // Temps écoulé : on verrouille l'envoi si le joueur n'a pas encore répondu.
@@ -179,8 +186,12 @@
   socket.on('game:scoreboard', ({ players: list }) => {
     const el = document.getElementById('scoreboard');
     const sorted = [...list].sort((a, b) => b.score - a.score);
-    el.innerHTML = sorted.map((p) => `
-      <div class="scoreboard-item"><span>${p.name}</span><span>${p.score} pt${p.score > 1 ? 's' : ''}</span></div>
+    el.innerHTML = sorted.map((p, i) => `
+      <div class="scoreboard-item${i === 0 && p.score > 0 ? ' is-leader' : ''}">
+        <span class="scoreboard-rank">${i + 1}</span>
+        <span class="scoreboard-name">${p.name}</span>
+        <span class="scoreboard-score">${p.score} pt${p.score > 1 ? 's' : ''}</span>
+      </div>
     `).join('') || 'Aucun joueur.';
   });
 

@@ -35,12 +35,19 @@ function publicPlayers(room) {
   }));
 }
 
+// Pioche une chanson jamais encore proposée durant cette partie. Priorité aux
+// chansons de la thématique choisie ; si elle est épuisée, on pioche parmi les
+// autres thématiques plutôt que de répéter un titre déjà joué. Retourne null si
+// vraiment toutes les chansons connues ont déjà servi.
 function pickSong(room, themeId) {
   const theme = songData.themes.find((t) => t.id === themeId);
   if (!theme) return null;
-  const available = theme.songs.filter((s) => !room.usedSongIds.has(s.id));
-  const pool = available.length > 0 ? available : theme.songs;
-  const song = pool[Math.floor(Math.random() * pool.length)];
+  let available = theme.songs.filter((s) => !room.usedSongIds.has(s.id));
+  if (available.length === 0) {
+    available = allSongs.filter((s) => !room.usedSongIds.has(s.id));
+  }
+  if (available.length === 0) return null;
+  const song = available[Math.floor(Math.random() * available.length)];
   room.usedSongIds.add(song.id);
   return song;
 }
@@ -89,6 +96,8 @@ io.on('connection', (socket) => {
       answerMode: 'libre', // 'libre' | 'qcm' | 'mixte'
       qcmRatio: 50, // % de manches en QCM quand answerMode === 'mixte'
       timerDuration: 30, // secondes ; 0 = pas de minuteur
+      questionCount: 10, // nombre de questions pour la partie (5, 10, 15 ou 20)
+      questionsAsked: 0, // nombre de questions déjà posées dans la partie en cours
     };
     socket.join(code);
     socket.data.roomCode = code;
@@ -96,6 +105,7 @@ io.on('connection', (socket) => {
     cb({
       code,
       themes: songData.themes.map((t) => ({ id: t.id, label: t.label, count: t.songs.length })),
+      questionCount: rooms[code].questionCount,
     });
   });
 
@@ -129,18 +139,37 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('host:setQuestionCount', ({ code, questionCount }) => {
+    const room = rooms[code];
+    if (!room || room.hostSocketId !== socket.id) return;
+    if ([5, 10, 15, 20].includes(questionCount)) {
+      room.questionCount = questionCount;
+    }
+  });
+
   socket.on('host:startRound', ({ code }) => {
     const room = rooms[code];
     if (!room || room.hostSocketId !== socket.id || !room.theme) return;
+    if (room.questionsAsked >= room.questionCount) return;
     const song = pickSong(room, room.theme);
-    if (!song) return;
+    if (!song) {
+      // Plus aucune chanson inédite disponible : on termine la partie proprement.
+      io.to(room.hostSocketId).emit('game:noMoreSongs');
+      return;
+    }
     room.currentSong = song;
     room.phase = 'question';
     room.pendingAnswers = {};
+    room.questionsAsked += 1;
     const roundMode = resolveRoundMode(room);
     room.currentRoundMode = roundMode;
 
-    const payload = { phrase: song.phrase, mode: roundMode };
+    const payload = {
+      phrase: song.phrase,
+      mode: roundMode,
+      questionIndex: room.questionsAsked,
+      questionCount: room.questionCount,
+    };
     if (roundMode === 'qcm') {
       payload.titleOptions = buildOptions(song.title, allTitles);
       payload.artistOptions = buildOptions(song.artist, allArtists);
@@ -172,6 +201,9 @@ io.on('connection', (socket) => {
       youtubeId: song.youtubeId,
       start: song.start,
       end: song.end,
+      isLastQuestion: room.questionsAsked >= room.questionCount,
+      questionIndex: room.questionsAsked,
+      questionCount: room.questionCount,
     });
     // Les joueurs voient seulement le titre/interprète, pas l'extrait audio.
     socket.to(code).emit('game:revealPlayers', {
