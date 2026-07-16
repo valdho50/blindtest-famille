@@ -33,6 +33,15 @@
     </div>
     <p class="hint" id="currentModeLabel">Mode actuel : Libre</p>
 
+    <h3>Minuteur</h3>
+    <div id="timerGrid" class="theme-grid">
+      <button class="theme-btn secondary timerBtn" data-duration="0">🚫 Aucun</button>
+      <button class="theme-btn secondary timerBtn" data-duration="15">⏱ 15 s</button>
+      <button class="theme-btn secondary timerBtn" data-duration="30">⏱ 30 s</button>
+      <button class="theme-btn secondary timerBtn" data-duration="60">⏱ 60 s</button>
+    </div>
+    <p class="hint" id="currentTimerLabel">Minuteur actuel : 30 s</p>
+
     <h3>Choisir une thématique</h3>
     <div id="themeGrid" class="theme-grid"></div>
   </div>
@@ -41,6 +50,7 @@
     <p>Thématique : <strong id="currentTheme"></strong></p>
     <div id="phraseZone" style="display:none;">
       <div class="phrase" id="phraseText"></div>
+      <div id="timerDisplay" style="display:none; text-align:center; font-size:2rem; font-weight:bold; color:#fbbf24;"></div>
       <div class="card" style="background:rgba(0,0,0,0.25); margin: 12px 0;">
         <strong>Réponse attendue (visible uniquement par toi) :</strong>
         <span id="answerHint"></span>
@@ -126,6 +136,48 @@
   document.getElementById('mixteRatio').onchange = sendAnswerMode;
   updateModeButtonsUI();
 
+  // --- Minuteur ---
+  let timerDuration = 30;
+
+  function updateTimerButtonsUI() {
+    document.querySelectorAll('.timerBtn').forEach((btn) => {
+      btn.style.outline = Number(btn.dataset.duration) === timerDuration ? '3px solid #fbbf24' : 'none';
+    });
+    document.getElementById('currentTimerLabel').textContent =
+      timerDuration === 0 ? 'Minuteur actuel : Aucun' : `Minuteur actuel : ${timerDuration} s`;
+  }
+
+  document.querySelectorAll('.timerBtn').forEach((btn) => {
+    btn.onclick = () => {
+      timerDuration = Number(btn.dataset.duration);
+      socket.emit('host:setTimerDuration', { code: roomCode, timerDuration });
+      updateTimerButtonsUI();
+    };
+  });
+  updateTimerButtonsUI();
+
+  let timerInterval = null;
+
+  function stopTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+    document.getElementById('timerDisplay').style.display = 'none';
+  }
+
+  function startTimer(endsAt) {
+    stopTimer();
+    const el = document.getElementById('timerDisplay');
+    el.style.display = 'block';
+    const tick = () => {
+      const remaining = Math.max(0, Math.round((endsAt - Date.now()) / 1000));
+      el.textContent = `⏱ ${remaining}s`;
+      el.style.color = remaining <= 5 ? '#fca5a5' : '#fbbf24';
+      if (remaining <= 0) stopTimer();
+    };
+    tick();
+    timerInterval = setInterval(tick, 250);
+  }
+
   socket.on('lobby:update', ({ players: list }) => {
     const el = document.getElementById('playerList');
     el.innerHTML = list.length
@@ -147,9 +199,10 @@
     document.getElementById('phraseZone').style.display = 'block';
   };
 
-  socket.on('game:phrase', ({ phrase }) => {
+  socket.on('game:phrase', ({ phrase, timerEndsAt }) => {
     document.getElementById('phraseText').textContent = phrase;
     document.getElementById('answersZone').innerHTML = 'En attente de réponses...';
+    if (timerEndsAt) startTimer(timerEndsAt); else stopTimer();
   });
 
   let expectedTitle = '';
@@ -215,6 +268,7 @@
   });
 
   document.getElementById('revealBtn').onclick = () => {
+    stopTimer();
     socket.emit('host:reveal', { code: roomCode });
   };
 

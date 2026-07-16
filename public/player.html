@@ -24,6 +24,7 @@
   </div>
 
   <div id="questionZone" class="card" style="display:none;">
+    <div id="timerDisplay" style="display:none; text-align:center; font-size:2.2rem; font-weight:bold; color:#fbbf24;"></div>
     <div class="phrase" id="phraseText"></div>
 
     <div id="libreZone" style="display:none;">
@@ -96,13 +97,43 @@
     });
   }
 
-  socket.on('game:phrase', ({ phrase, mode, titleOptions, artistOptions }) => {
+  let timerInterval = null;
+
+  function stopTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+    document.getElementById('timerDisplay').style.display = 'none';
+  }
+
+  function startTimer(endsAt) {
+    stopTimer();
+    const el = document.getElementById('timerDisplay');
+    el.style.display = 'block';
+    const tick = () => {
+      const remaining = Math.max(0, Math.round((endsAt - Date.now()) / 1000));
+      el.textContent = `⏱ ${remaining}s`;
+      el.style.color = remaining <= 5 ? '#fca5a5' : '#fbbf24';
+      if (remaining <= 0) {
+        stopTimer();
+        // Temps écoulé : on verrouille l'envoi si le joueur n'a pas encore répondu.
+        if (!document.getElementById('submitBtn').disabled) {
+          document.getElementById('submitBtn').disabled = true;
+          document.getElementById('submitBtn').textContent = 'Temps écoulé';
+        }
+      }
+    };
+    tick();
+    timerInterval = setInterval(tick, 250);
+  }
+
+  socket.on('game:phrase', ({ phrase, mode, titleOptions, artistOptions, timerEndsAt }) => {
     document.getElementById('waitZone').style.display = 'none';
     document.getElementById('revealZone').style.display = 'none';
     document.getElementById('questionZone').style.display = 'block';
     document.getElementById('phraseText').textContent = phrase;
     document.getElementById('submittedMsg').style.display = 'none';
     document.getElementById('submitBtn').disabled = false;
+    document.getElementById('submitBtn').textContent = 'Envoyer ma réponse';
 
     currentMode = mode || 'libre';
     selectedTitle = null;
@@ -119,6 +150,8 @@
       document.getElementById('titleGuess').value = '';
       document.getElementById('artistGuess').value = '';
     }
+
+    if (timerEndsAt) startTimer(timerEndsAt); else stopTimer();
   });
 
   document.getElementById('submitBtn').onclick = () => {
@@ -136,6 +169,7 @@
   };
 
   socket.on('game:revealPlayers', ({ title, artist }) => {
+    stopTimer();
     document.getElementById('questionZone').style.display = 'none';
     document.getElementById('revealZone').style.display = 'block';
     document.getElementById('revealTitle').textContent = title;

@@ -88,6 +88,7 @@ io.on('connection', (socket) => {
       pendingAnswers: {},
       answerMode: 'libre', // 'libre' | 'qcm' | 'mixte'
       qcmRatio: 50, // % de manches en QCM quand answerMode === 'mixte'
+      timerDuration: 30, // secondes ; 0 = pas de minuteur
     };
     socket.join(code);
     socket.data.roomCode = code;
@@ -120,6 +121,14 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('host:setTimerDuration', ({ code, timerDuration }) => {
+    const room = rooms[code];
+    if (!room || room.hostSocketId !== socket.id) return;
+    if (typeof timerDuration === 'number' && timerDuration >= 0 && timerDuration <= 300) {
+      room.timerDuration = timerDuration;
+    }
+  });
+
   socket.on('host:startRound', ({ code }) => {
     const room = rooms[code];
     if (!room || room.hostSocketId !== socket.id || !room.theme) return;
@@ -135,6 +144,10 @@ io.on('connection', (socket) => {
     if (roundMode === 'qcm') {
       payload.titleOptions = buildOptions(song.title, allTitles);
       payload.artistOptions = buildOptions(song.artist, allArtists);
+    }
+    if (room.timerDuration > 0) {
+      payload.timerDuration = room.timerDuration;
+      payload.timerEndsAt = Date.now() + room.timerDuration * 1000;
     }
     io.to(code).emit('game:phrase', payload);
     io.to(room.hostSocketId).emit('game:answersUpdate', { answers: [] });
