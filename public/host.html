@@ -52,7 +52,10 @@
     <div id="revealZone" style="display:none;">
       <h2 id="revealTitle"></h2>
       <p id="revealArtist"></p>
-      <div id="youtube-player"></div>
+      <div id="youtube-player">
+        <iframe id="digiviewFrame" allow="picture-in-picture; autoplay; fullscreen" frameborder="0"
+          width="100%" height="auto" style="aspect-ratio: 200/150; max-width:480px; border-radius:12px; display:none;"></iframe>
+      </div>
       <p id="videoError" style="display:none; color:#fca5a5; font-weight:bold;"></p>
       <p class="hint">L'extrait est diffusé depuis cet écran (pensez à activer le son / brancher des enceintes).</p>
       <button id="nextRoundBtn">Manche suivante</button>
@@ -229,18 +232,9 @@
     // pour reproduire à l'identique un iframe statique.
     const vignette = encodeURIComponent(`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`);
     const src = `https://ladigitale.dev/digiview/inc/video.php?videoId=${youtubeId}&vignette=${vignette}&debut=${start}&fin=${end}&largeur=200&hauteur=150`;
-    const container = document.getElementById('youtube-player');
-    container.innerHTML = '';
-    const iframe = document.createElement('iframe');
+    const iframe = document.getElementById('digiviewFrame');
+    iframe.style.display = 'block';
     iframe.src = src;
-    iframe.setAttribute('allow', 'picture-in-picture; autoplay; fullscreen');
-    iframe.setAttribute('frameborder', '0');
-    iframe.width = '100%';
-    iframe.height = 'auto';
-    iframe.style.aspectRatio = '200/150';
-    iframe.style.maxWidth = '480px';
-    iframe.style.borderRadius = '12px';
-    container.appendChild(iframe);
   });
 
   document.getElementById('nextRoundBtn').onclick = () => {
