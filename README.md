@@ -31,10 +31,11 @@ Blind test prêt sur http://localhost:3000
    - Windows : `ipconfig` (ligne "Adresse IPv4")
    - Mac/Linux : `ifconfig` ou `ip a` (souvent une adresse du type `192.168.x.x`)
 4. Sur chaque téléphone, ouvre un navigateur et va sur `http://<IP-de-l-ordinateur>:3000/player.html` (ex : `http://192.168.1.42:3000/player.html`), saisit le code de partie et un pseudo.
-5. Depuis l'écran du maître du jeu, choisis une thématique, clique sur **Lancer une manche**.
-6. Les joueurs voient la phrase et envoient leur réponse. Le maître du jeu voit les réponses arriver en direct, coche "titre ok" / "interprète ok" pour chaque joueur et valide (1 point par élément correct).
-7. Clique sur **Lancer la correction** : le titre, l'interprète et l'extrait YouTube (audio) s'affichent sur l'écran du maître du jeu — c'est lui qui diffuse le son (haut-parleurs de l'ordinateur ou enceinte branchée). Les joueurs voient uniquement le titre/interprète, pas la vidéo.
-8. **Manche suivante** pour continuer, **Terminer la partie** pour clore et afficher les scores finaux.
+5. Dans le lobby, choisis le **mode de réponse** : Libre (les joueurs tapent leur réponse), QCM (ils choisissent parmi 4 propositions générées automatiquement à partir des autres chansons), ou Mixte (mélange des deux, avec un curseur pour régler la proportion de manches en QCM).
+6. Choisis une thématique, clique sur **Lancer une manche**.
+7. Les joueurs voient la phrase et envoient leur réponse. Le maître du jeu voit dès le début de la manche la réponse attendue (visible uniquement sur son écran), et voit les réponses des joueurs arriver en direct avec les cases "titre ok"/"interprète ok" **pré-cochées automatiquement** quand la réponse du joueur correspond (comparaison tolérante aux accents/majuscules/ponctuation) — il peut ajuster manuellement avant de valider (1 point par élément correct).
+8. Clique sur **Lancer la correction** : le titre, l'interprète et l'extrait YouTube (audio) s'affichent sur l'écran du maître du jeu — c'est lui qui diffuse le son (haut-parleurs de l'ordinateur ou enceinte branchée). Les joueurs voient uniquement le titre/interprète, pas la vidéo.
+9. **Manche suivante** pour continuer, **Terminer la partie** pour clore et afficher les scores finaux.
 
 ## Ajouter / modifier des chansons
 

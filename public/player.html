@@ -25,10 +25,21 @@
 
   <div id="questionZone" class="card" style="display:none;">
     <div class="phrase" id="phraseText"></div>
-    <p>Titre de la chanson</p>
-    <input id="titleGuess" placeholder="Titre..." />
-    <p>Interprète</p>
-    <input id="artistGuess" placeholder="Interprète..." />
+
+    <div id="libreZone" style="display:none;">
+      <p>Titre de la chanson</p>
+      <input id="titleGuess" placeholder="Titre..." />
+      <p>Interprète</p>
+      <input id="artistGuess" placeholder="Interprète..." />
+    </div>
+
+    <div id="qcmZone" style="display:none;">
+      <p>Titre de la chanson</p>
+      <div id="titleOptions" class="theme-grid"></div>
+      <p>Interprète</p>
+      <div id="artistOptions" class="theme-grid"></div>
+    </div>
+
     <button id="submitBtn">Envoyer ma réponse</button>
     <p id="submittedMsg" style="display:none;">✓ Réponse envoyée</p>
   </div>
@@ -69,20 +80,56 @@
     });
   };
 
-  socket.on('game:phrase', ({ phrase }) => {
+  let currentMode = 'libre';
+  let selectedTitle = null;
+  let selectedArtist = null;
+
+  function renderOptions(containerId, options, onSelect) {
+    const el = document.getElementById(containerId);
+    el.innerHTML = options.map((opt) => `<button class="theme-btn secondary" data-value="${opt}">${opt}</button>`).join('');
+    el.querySelectorAll('button').forEach((btn) => {
+      btn.onclick = () => {
+        el.querySelectorAll('button').forEach((b) => b.style.outline = 'none');
+        btn.style.outline = '3px solid #fbbf24';
+        onSelect(btn.dataset.value);
+      };
+    });
+  }
+
+  socket.on('game:phrase', ({ phrase, mode, titleOptions, artistOptions }) => {
     document.getElementById('waitZone').style.display = 'none';
     document.getElementById('revealZone').style.display = 'none';
     document.getElementById('questionZone').style.display = 'block';
     document.getElementById('phraseText').textContent = phrase;
-    document.getElementById('titleGuess').value = '';
-    document.getElementById('artistGuess').value = '';
     document.getElementById('submittedMsg').style.display = 'none';
     document.getElementById('submitBtn').disabled = false;
+
+    currentMode = mode || 'libre';
+    selectedTitle = null;
+    selectedArtist = null;
+
+    if (currentMode === 'qcm') {
+      document.getElementById('libreZone').style.display = 'none';
+      document.getElementById('qcmZone').style.display = 'block';
+      renderOptions('titleOptions', titleOptions, (v) => { selectedTitle = v; });
+      renderOptions('artistOptions', artistOptions, (v) => { selectedArtist = v; });
+    } else {
+      document.getElementById('qcmZone').style.display = 'none';
+      document.getElementById('libreZone').style.display = 'block';
+      document.getElementById('titleGuess').value = '';
+      document.getElementById('artistGuess').value = '';
+    }
   });
 
   document.getElementById('submitBtn').onclick = () => {
-    const titleGuess = document.getElementById('titleGuess').value.trim();
-    const artistGuess = document.getElementById('artistGuess').value.trim();
+    let titleGuess, artistGuess;
+    if (currentMode === 'qcm') {
+      titleGuess = selectedTitle || '';
+      artistGuess = selectedArtist || '';
+    } else {
+      titleGuess = document.getElementById('titleGuess').value.trim();
+      artistGuess = document.getElementById('artistGuess').value.trim();
+    }
     socket.emit('player:submitAnswer', { code: roomCode, titleGuess, artistGuess });
     document.getElementById('submittedMsg').style.display = 'block';
     document.getElementById('submitBtn').disabled = true;

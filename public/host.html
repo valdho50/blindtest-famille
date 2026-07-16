@@ -20,6 +20,19 @@
     <p class="hint">Les joueurs se connectent sur cet appareil, ouvrent player.html sur leur téléphone et saisissent ce code.</p>
     <h3>Joueurs connectés</h3>
     <div id="playerList">Aucun joueur pour l'instant.</div>
+
+    <h3>Mode de réponse</h3>
+    <div id="answerModeGrid" class="theme-grid">
+      <button id="modeLibreBtn" class="theme-btn secondary">✏️ Libre<br><span class="hint">Les joueurs tapent leur réponse</span></button>
+      <button id="modeQcmBtn" class="theme-btn secondary">☑️ QCM<br><span class="hint">Les joueurs choisissent parmi 4 propositions</span></button>
+      <button id="modeMixteBtn" class="theme-btn secondary">🔀 Mixte<br><span class="hint">Un mélange des deux</span></button>
+    </div>
+    <div id="mixteRatioZone" style="display:none; margin-top:10px;">
+      <label for="mixteRatio">Proportion de manches en QCM : <strong id="mixteRatioValue">50%</strong></label>
+      <input type="range" id="mixteRatio" min="0" max="100" step="10" value="50" style="width:100%;" />
+    </div>
+    <p class="hint" id="currentModeLabel">Mode actuel : Libre</p>
+
     <h3>Choisir une thématique</h3>
     <div id="themeGrid" class="theme-grid"></div>
   </div>
@@ -91,6 +104,34 @@
     });
   };
 
+  // --- Mode de réponse (Libre / QCM / Mixte) ---
+  let answerMode = 'libre';
+  let qcmRatio = 50;
+
+  function updateModeButtonsUI() {
+    document.getElementById('modeLibreBtn').style.outline = answerMode === 'libre' ? '3px solid #fbbf24' : 'none';
+    document.getElementById('modeQcmBtn').style.outline = answerMode === 'qcm' ? '3px solid #fbbf24' : 'none';
+    document.getElementById('modeMixteBtn').style.outline = answerMode === 'mixte' ? '3px solid #fbbf24' : 'none';
+    document.getElementById('mixteRatioZone').style.display = answerMode === 'mixte' ? 'block' : 'none';
+    const labels = { libre: 'Libre', qcm: 'QCM', mixte: `Mixte (${qcmRatio}% QCM)` };
+    document.getElementById('currentModeLabel').textContent = `Mode actuel : ${labels[answerMode]}`;
+  }
+
+  function sendAnswerMode() {
+    socket.emit('host:setAnswerMode', { code: roomCode, answerMode, qcmRatio });
+    updateModeButtonsUI();
+  }
+
+  document.getElementById('modeLibreBtn').onclick = () => { answerMode = 'libre'; sendAnswerMode(); };
+  document.getElementById('modeQcmBtn').onclick = () => { answerMode = 'qcm'; sendAnswerMode(); };
+  document.getElementById('modeMixteBtn').onclick = () => { answerMode = 'mixte'; sendAnswerMode(); };
+  document.getElementById('mixteRatio').oninput = (e) => {
+    qcmRatio = Number(e.target.value);
+    document.getElementById('mixteRatioValue').textContent = `${qcmRatio}%`;
+  };
+  document.getElementById('mixteRatio').onchange = sendAnswerMode;
+  updateModeButtonsUI();
+
   socket.on('lobby:update', ({ players: list }) => {
     const el = document.getElementById('playerList');
     el.innerHTML = list.length
@@ -117,9 +158,34 @@
     document.getElementById('answersZone').innerHTML = 'En attente de réponses...';
   });
 
+  let expectedTitle = '';
+  let expectedArtist = '';
+
   socket.on('game:answerHint', ({ title, artist }) => {
+    expectedTitle = title;
+    expectedArtist = artist;
     document.getElementById('answerHint').textContent = ` ${title} — ${artist}`;
   });
+
+  // Normalise une chaîne pour comparaison tolérante (accents, casse, ponctuation, espaces).
+  function normalize(str) {
+    return (str || '')
+      .toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '') // retire les accents
+      .replace(/[^a-z0-9\s]/g, ' ') // retire la ponctuation
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function looksCorrect(guess, expected) {
+    const g = normalize(guess);
+    const e = normalize(expected);
+    if (!g || !e) return false;
+    if (g === e) return true;
+    // tolérance : l'un contient l'autre (utile pour "je suis venu te dire..." tronqué, etc.)
+    if (g.length >= 3 && (e.includes(g) || g.includes(e))) return true;
+    return false;
+  }
 
   socket.on('game:answersUpdate', ({ answers }) => {
     const zone = document.getElementById('answersZone');
@@ -127,16 +193,20 @@
       zone.innerHTML = 'En attente de réponses...';
       return;
     }
-    zone.innerHTML = answers.map((a) => `
+    zone.innerHTML = answers.map((a) => {
+      const titleGuessOk = looksCorrect(a.titleGuess, expectedTitle);
+      const artistGuessOk = looksCorrect(a.artistGuess, expectedArtist);
+      return `
       <div class="answer-row" data-id="${a.id}">
         <div class="guesses"><strong>${a.name}</strong> : titre = "${a.titleGuess || '—'}", interprète = "${a.artistGuess || '—'}"</div>
         <div>
-          <label><input type="checkbox" class="titleOk"> titre ok</label>
-          <label><input type="checkbox" class="artistOk"> interprète ok</label>
+          <label><input type="checkbox" class="titleOk" ${titleGuessOk ? 'checked' : ''}> titre ok</label>
+          <label><input type="checkbox" class="artistOk" ${artistGuessOk ? 'checked' : ''}> interprète ok</label>
           <button class="validateBtn secondary">Valider</button>
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
     zone.querySelectorAll('.validateBtn').forEach((btn) => {
       btn.onclick = (e) => {
         const row = e.target.closest('.answer-row');

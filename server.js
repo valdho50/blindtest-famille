@@ -45,6 +45,34 @@ function pickSong(room, themeId) {
   return song;
 }
 
+// Toutes les chansons, toutes thématiques confondues (pour piocher des leurres QCM
+// même si la thématique en cours n'a pas assez de titres différents).
+const allSongs = songData.themes.flatMap((t) => t.songs);
+const allTitles = [...new Set(allSongs.map((s) => s.title))];
+const allArtists = [...new Set(allSongs.map((s) => s.artist))];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildOptions(correctValue, pool, count = 4) {
+  const decoys = shuffle(pool.filter((v) => v !== correctValue)).slice(0, count - 1);
+  return shuffle([correctValue, ...decoys]);
+}
+
+// Détermine si la manche à venir doit être en QCM, selon le mode choisi par l'hôte.
+function resolveRoundMode(room) {
+  if (room.answerMode === 'libre') return 'libre';
+  if (room.answerMode === 'qcm') return 'qcm';
+  // mode 'mixte' : proportion de QCM définie par room.qcmRatio (0-100)
+  return Math.random() * 100 < room.qcmRatio ? 'qcm' : 'libre';
+}
+
 io.on('connection', (socket) => {
   // --- HOST ---
   socket.on('host:create', (cb) => {
@@ -55,8 +83,11 @@ io.on('connection', (socket) => {
       theme: null,
       usedSongIds: new Set(),
       currentSong: null,
+      currentRoundMode: 'libre',
       phase: 'lobby',
       pendingAnswers: {},
+      answerMode: 'libre', // 'libre' | 'qcm' | 'mixte'
+      qcmRatio: 50, // % de manches en QCM quand answerMode === 'mixte'
     };
     socket.join(code);
     socket.data.roomCode = code;
@@ -78,6 +109,17 @@ io.on('connection', (socket) => {
     });
   });
 
+  socket.on('host:setAnswerMode', ({ code, answerMode, qcmRatio }) => {
+    const room = rooms[code];
+    if (!room || room.hostSocketId !== socket.id) return;
+    if (['libre', 'qcm', 'mixte'].includes(answerMode)) {
+      room.answerMode = answerMode;
+    }
+    if (typeof qcmRatio === 'number' && qcmRatio >= 0 && qcmRatio <= 100) {
+      room.qcmRatio = qcmRatio;
+    }
+  });
+
   socket.on('host:startRound', ({ code }) => {
     const room = rooms[code];
     if (!room || room.hostSocketId !== socket.id || !room.theme) return;
@@ -86,7 +128,15 @@ io.on('connection', (socket) => {
     room.currentSong = song;
     room.phase = 'question';
     room.pendingAnswers = {};
-    io.to(code).emit('game:phrase', { phrase: song.phrase });
+    const roundMode = resolveRoundMode(room);
+    room.currentRoundMode = roundMode;
+
+    const payload = { phrase: song.phrase, mode: roundMode };
+    if (roundMode === 'qcm') {
+      payload.titleOptions = buildOptions(song.title, allTitles);
+      payload.artistOptions = buildOptions(song.artist, allArtists);
+    }
+    io.to(code).emit('game:phrase', payload);
     io.to(room.hostSocketId).emit('game:answersUpdate', { answers: [] });
     // Réponse attendue envoyée uniquement au maître du jeu, dès le début de la manche,
     // pour qu'il puisse suivre/valider les réponses des joueurs en connaissance de cause.
