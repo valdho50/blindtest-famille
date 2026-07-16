@@ -2,11 +2,12 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#1a1030" />
 <title>Blind Test — Joueur</title>
 <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body class="player-page">
 <div class="container container-narrow">
   <header class="app-header">
     <div class="app-header-icon">🎵</div>
@@ -18,9 +19,9 @@
 
   <div id="joinZone" class="card">
     <p class="eyebrow">Code de la partie</p>
-    <input id="codeInput" maxlength="4" placeholder="ex : 4821" inputmode="numeric" />
+    <input id="codeInput" maxlength="4" placeholder="ex : 4821" inputmode="numeric" class="input-lg input-center" />
     <p class="eyebrow">Ton pseudo</p>
-    <input id="nameInput" maxlength="20" placeholder="ex : Cédric" />
+    <input id="nameInput" maxlength="20" placeholder="ex : Cédric" class="input-lg" />
     <button id="joinBtn" class="btn-primary btn-lg btn-block">Rejoindre la partie</button>
     <p id="joinError" class="error-text"></p>
   </div>
@@ -30,29 +31,29 @@
     <p>Tu es bien connecté ! En attente du maître du jeu...</p>
   </div>
 
-  <div id="questionZone" class="card" style="display:none;">
-    <div id="timerDisplay" class="timer-display" style="display:none;"></div>
+  <div id="questionZone" class="card question-card" style="display:none;">
+    <div id="timerDisplay" class="timer-pill" style="display:none;"></div>
     <div class="phrase" id="phraseText"></div>
 
     <div id="libreZone" style="display:none;">
       <p class="eyebrow">Titre de la chanson</p>
-      <input id="titleGuess" placeholder="Titre..." />
+      <input id="titleGuess" placeholder="Titre..." class="input-lg" />
       <p class="eyebrow">Interprète</p>
-      <input id="artistGuess" placeholder="Interprète..." />
+      <input id="artistGuess" placeholder="Interprète..." class="input-lg" />
     </div>
 
     <div id="qcmZone" style="display:none;">
       <p class="eyebrow">Titre de la chanson</p>
-      <div id="titleOptions" class="option-grid"></div>
-      <p class="eyebrow">Interprète</p>
-      <div id="artistOptions" class="option-grid"></div>
+      <div id="titleOptions" class="option-grid option-grid-stack"></div>
+      <p class="eyebrow" style="margin-top:18px;">Interprète</p>
+      <div id="artistOptions" class="option-grid option-grid-stack"></div>
     </div>
 
-    <button id="submitBtn" class="btn-primary btn-lg btn-block">Envoyer ma réponse</button>
-    <p id="submittedMsg" class="success-text" style="display:none;">✓ Réponse envoyée</p>
+    <p id="submittedMsg" class="success-text" style="display:none;">✓ Réponse envoyée — en attente des autres joueurs</p>
   </div>
 
-  <div id="revealZone" class="card card-center" style="display:none;">
+  <div id="revealZone" class="card card-center reveal-card-player" style="display:none;">
+    <div class="reveal-icon">🎉</div>
     <p class="eyebrow">La bonne réponse était</p>
     <h2 id="revealTitle"></h2>
     <p class="reveal-artist" id="revealArtist"></p>
@@ -63,6 +64,10 @@
     <h3><span class="section-icon">🏆</span> Scores</h3>
     <div id="scoreboard" class="scoreboard"></div>
   </div>
+</div>
+
+<div id="submitBar" class="submit-bar" style="display:none;">
+  <button id="submitBtn" class="btn-primary btn-lg btn-block">Envoyer ma réponse</button>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -94,7 +99,13 @@
 
   function renderOptions(containerId, options, onSelect) {
     const el = document.getElementById(containerId);
-    el.innerHTML = options.map((opt) => `<button class="option-card" data-value="${opt}"><span class="option-title">${opt}</span></button>`).join('');
+    const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+    el.innerHTML = options.map((opt, i) => `
+      <button class="option-card option-card-row" data-value="${opt}">
+        <span class="option-letter">${letters[i] || ''}</span>
+        <span class="option-title">${opt}</span>
+      </button>
+    `).join('');
     el.querySelectorAll('button').forEach((btn) => {
       btn.onclick = () => {
         el.querySelectorAll('button').forEach((b) => b.classList.remove('is-selected'));
@@ -115,7 +126,7 @@
   function startTimer(endsAt) {
     stopTimer();
     const el = document.getElementById('timerDisplay');
-    el.style.display = 'block';
+    el.style.display = 'inline-flex';
     const tick = () => {
       const remaining = Math.max(0, Math.round((endsAt - Date.now()) / 1000));
       el.textContent = `⏱ ${remaining}s`;
@@ -155,6 +166,7 @@
     document.getElementById('waitZone').style.display = 'none';
     document.getElementById('revealZone').style.display = 'none';
     document.getElementById('questionZone').style.display = 'block';
+    document.getElementById('submitBar').style.display = 'block';
     document.getElementById('phraseText').textContent = phrase;
     document.getElementById('submittedMsg').style.display = 'none';
     document.getElementById('submitBtn').disabled = false;
@@ -184,6 +196,7 @@
   socket.on('game:revealPlayers', ({ title, artist }) => {
     stopTimer();
     document.getElementById('questionZone').style.display = 'none';
+    document.getElementById('submitBar').style.display = 'none';
     document.getElementById('revealZone').style.display = 'block';
     document.getElementById('revealTitle').textContent = title;
     document.getElementById('revealArtist').textContent = artist;
@@ -202,6 +215,7 @@
   });
 
   socket.on('game:ended', ({ players: list }) => {
+    document.getElementById('submitBar').style.display = 'none';
     alert('Partie terminée ! Merci d\'avoir joué 🎉');
   });
 

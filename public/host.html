@@ -102,7 +102,7 @@
             <span class="toggle-track"><span class="toggle-thumb"></span></span>
           </label>
         </div>
-        <span id="answerHint" class="answer-hint-value answer-hint-masked"></span>
+        <span id="answerHint" class="answer-hint-value answer-hint-hidden">🔒 Réponse masquée</span>
       </div>
 
       <h3><span class="section-icon">🧑‍🤝‍🧑</span> Statut des joueurs</h3>
@@ -112,20 +112,26 @@
     </div>
 
     <div id="revealZone" style="display:none;">
-      <div class="reveal-card">
-        <p class="eyebrow">La bonne réponse était</p>
-        <h2 id="revealTitle"></h2>
-        <p class="reveal-artist" id="revealArtist"></p>
-      </div>
-      <div id="youtube-player">
-        <iframe id="digiviewFrame" allow="picture-in-picture; autoplay; fullscreen" frameborder="0"
-          width="100%" height="auto" style="aspect-ratio: 200/150; max-width:480px; border-radius:14px; display:none;"></iframe>
-      </div>
-      <p id="videoError" class="error-text" style="display:none;"></p>
-      <p class="hint">L'extrait est diffusé depuis cet écran (pensez à activer le son / brancher des enceintes).</p>
+      <div class="reveal-layout">
+        <div class="reveal-media-col">
+          <div class="reveal-card">
+            <p class="eyebrow">La bonne réponse était</p>
+            <h2 id="revealTitle"></h2>
+            <p class="reveal-artist" id="revealArtist"></p>
+          </div>
+          <div id="youtube-player">
+            <iframe id="digiviewFrame" allow="picture-in-picture; autoplay; fullscreen" frameborder="0"
+              width="100%" height="auto" style="aspect-ratio: 200/150; border-radius:14px; display:none;"></iframe>
+          </div>
+          <p id="videoError" class="error-text" style="display:none;"></p>
+          <p class="hint">L'extrait est diffusé depuis cet écran (pensez à activer le son / brancher des enceintes).</p>
+        </div>
 
-      <h3 style="margin-top:22px;"><span class="section-icon">📩</span> Réponses des joueurs</h3>
-      <div id="answersZone" class="answers-zone">Aucune réponse.</div>
+        <div class="reveal-answers-col">
+          <h3><span class="section-icon">📩</span> Réponses des joueurs</h3>
+          <div id="answersZone" class="answers-zone">Aucune réponse.</div>
+        </div>
+      </div>
 
       <p id="lastQuestionNotice" class="notice-banner" style="display:none;">🏁 Toutes les questions ont été posées !</p>
       <div class="button-row">
@@ -293,21 +299,35 @@
     }
     // La réponse attendue est masquée par défaut à chaque nouvelle question.
     document.getElementById('answerHintToggle').checked = false;
-    document.getElementById('answerHint').classList.add('answer-hint-masked');
+    renderAnswerHint();
     if (timerEndsAt) startTimer(timerEndsAt); else stopTimer();
   });
 
-  document.getElementById('answerHintToggle').onchange = (e) => {
-    document.getElementById('answerHint').classList.toggle('answer-hint-masked', !e.target.checked);
-  };
-
   let expectedTitle = '';
   let expectedArtist = '';
+  let answerHintText = '';
+
+  // Affiche soit la réponse complète, soit rien (aucun indice de longueur type
+  // flou) — c'est tout ou rien, contrôlé par l'interrupteur.
+  function renderAnswerHint() {
+    const el = document.getElementById('answerHint');
+    const visible = document.getElementById('answerHintToggle').checked;
+    if (visible && answerHintText) {
+      el.textContent = answerHintText;
+      el.classList.remove('answer-hint-hidden');
+    } else {
+      el.textContent = '🔒 Réponse masquée';
+      el.classList.add('answer-hint-hidden');
+    }
+  }
+
+  document.getElementById('answerHintToggle').onchange = renderAnswerHint;
 
   socket.on('game:answerHint', ({ title, artist }) => {
     expectedTitle = title;
     expectedArtist = artist;
-    document.getElementById('answerHint').textContent = `${title} — ${artist}`;
+    answerHintText = `${title} — ${artist}`;
+    renderAnswerHint();
   });
 
   // --- Statut des joueurs pendant la question (pastilles rouge/vert) ---
@@ -359,6 +379,10 @@
     return false;
   }
 
+  function initials(name) {
+    return (name || '?').trim().slice(0, 2).toUpperCase();
+  }
+
   // Affiche les réponses détaillées des joueurs avec cases à cocher, sur
   // l'écran de correction : c'est là que le maître du jeu valide les points.
   function renderAnswersReview(answers) {
@@ -370,26 +394,41 @@
     zone.innerHTML = answers.map((a) => {
       const titleGuessOk = looksCorrect(a.titleGuess, expectedTitle);
       const artistGuessOk = looksCorrect(a.artistGuess, expectedArtist);
+      const hasAnswer = a.titleGuess || a.artistGuess;
       return `
-      <div class="answer-row" data-id="${a.id}">
-        <div class="guesses"><strong>${a.name}</strong> : titre = "${a.titleGuess || '—'}", interprète = "${a.artistGuess || '—'}"</div>
+      <div class="answer-card" data-id="${a.id}">
+        <div class="answer-card-head">
+          <span class="answer-avatar">${initials(a.name)}</span>
+          <span class="answer-name">${a.name}</span>
+        </div>
+        <div class="answer-guess-list">
+          <div class="answer-guess-line">
+            <span class="answer-guess-label">Titre</span>
+            <span class="answer-guess-value${a.titleGuess ? '' : ' answer-guess-empty'}">${a.titleGuess || 'Pas de réponse'}</span>
+          </div>
+          <div class="answer-guess-line">
+            <span class="answer-guess-label">Interprète</span>
+            <span class="answer-guess-value${a.artistGuess ? '' : ' answer-guess-empty'}">${a.artistGuess || 'Pas de réponse'}</span>
+          </div>
+        </div>
         <div class="answer-row-controls">
-          <label><input type="checkbox" class="titleOk" ${titleGuessOk ? 'checked' : ''}> titre ok</label>
-          <label><input type="checkbox" class="artistOk" ${artistGuessOk ? 'checked' : ''}> interprète ok</label>
-          <button class="validateBtn btn-secondary btn-sm">Valider</button>
+          <label class="check-pill"><input type="checkbox" class="titleOk" ${titleGuessOk ? 'checked' : ''}><span>Titre ok</span></label>
+          <label class="check-pill"><input type="checkbox" class="artistOk" ${artistGuessOk ? 'checked' : ''}><span>Interprète ok</span></label>
+          <button class="validateBtn btn-primary btn-sm" ${hasAnswer ? '' : 'disabled'}>Valider</button>
         </div>
       </div>
     `;
     }).join('');
     zone.querySelectorAll('.validateBtn').forEach((btn) => {
       btn.onclick = (e) => {
-        const row = e.target.closest('.answer-row');
+        const row = e.target.closest('.answer-card');
         const playerId = row.dataset.id;
         const titleCorrect = row.querySelector('.titleOk').checked;
         const artistCorrect = row.querySelector('.artistOk').checked;
         socket.emit('host:validateAnswer', { code: roomCode, playerId, titleCorrect, artistCorrect });
         btn.textContent = '✓ Validé';
         btn.disabled = true;
+        row.classList.add('answer-card-validated');
       };
     });
   }
