@@ -93,12 +93,21 @@
     <div id="phraseZone" style="display:none;">
       <div class="phrase" id="phraseText"></div>
       <div id="timerDisplay" class="timer-display" style="display:none;"></div>
+
       <div class="answer-hint-box">
-        <span class="eyebrow">Réponse attendue (visible uniquement par toi)</span>
-        <span id="answerHint" class="answer-hint-value"></span>
+        <div class="answer-hint-top">
+          <span class="eyebrow" style="margin:0;">Réponse attendue (visible uniquement par toi)</span>
+          <label class="toggle">
+            <input type="checkbox" id="answerHintToggle" />
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </div>
+        <span id="answerHint" class="answer-hint-value answer-hint-masked"></span>
       </div>
-      <h3><span class="section-icon">📩</span> Réponses des joueurs</h3>
-      <div id="answersZone" class="answers-zone">En attente de réponses...</div>
+
+      <h3><span class="section-icon">🧑‍🤝‍🧑</span> Statut des joueurs</h3>
+      <div id="playerStatusGrid" class="player-status-grid">En attente de joueurs...</div>
+
       <button id="revealBtn" class="btn-secondary btn-block">Lancer la correction</button>
     </div>
 
@@ -114,6 +123,10 @@
       </div>
       <p id="videoError" class="error-text" style="display:none;"></p>
       <p class="hint">L'extrait est diffusé depuis cet écran (pensez à activer le son / brancher des enceintes).</p>
+
+      <h3 style="margin-top:22px;"><span class="section-icon">📩</span> Réponses des joueurs</h3>
+      <div id="answersZone" class="answers-zone">Aucune réponse.</div>
+
       <p id="lastQuestionNotice" class="notice-banner" style="display:none;">🏁 Toutes les questions ont été posées !</p>
       <div class="button-row">
         <button id="nextRoundBtn" class="btn-primary">Question suivante</button>
@@ -274,13 +287,19 @@
 
   socket.on('game:phrase', ({ phrase, timerEndsAt, questionIndex, questionCount: total }) => {
     document.getElementById('phraseText').textContent = phrase;
-    document.getElementById('answersZone').innerHTML = 'En attente de réponses...';
     if (questionIndex && total) {
       document.getElementById('questionProgressBadge').style.display = 'inline-flex';
       document.getElementById('questionProgressText').textContent = `${questionIndex} / ${total}`;
     }
+    // La réponse attendue est masquée par défaut à chaque nouvelle question.
+    document.getElementById('answerHintToggle').checked = false;
+    document.getElementById('answerHint').classList.add('answer-hint-masked');
     if (timerEndsAt) startTimer(timerEndsAt); else stopTimer();
   });
+
+  document.getElementById('answerHintToggle').onchange = (e) => {
+    document.getElementById('answerHint').classList.toggle('answer-hint-masked', !e.target.checked);
+  };
 
   let expectedTitle = '';
   let expectedArtist = '';
@@ -289,6 +308,35 @@
     expectedTitle = title;
     expectedArtist = artist;
     document.getElementById('answerHint').textContent = `${title} — ${artist}`;
+  });
+
+  // --- Statut des joueurs pendant la question (pastilles rouge/vert) ---
+  let roundPlayers = [];
+  let answeredIds = [];
+
+  function renderPlayerStatusGrid() {
+    const el = document.getElementById('playerStatusGrid');
+    if (!roundPlayers.length) {
+      el.innerHTML = 'En attente de joueurs...';
+      return;
+    }
+    el.innerHTML = roundPlayers.map((p) => {
+      const answered = answeredIds.includes(p.id);
+      return `<div class="status-chip ${answered ? 'status-chip-ok' : 'status-chip-pending'}">
+        <span class="status-dot"></span>${p.name}
+      </div>`;
+    }).join('');
+  }
+
+  socket.on('game:roundPlayers', ({ players: list }) => {
+    roundPlayers = list;
+    answeredIds = [];
+    renderPlayerStatusGrid();
+  });
+
+  socket.on('game:answersStatus', ({ answeredIds: ids }) => {
+    answeredIds = ids;
+    renderPlayerStatusGrid();
   });
 
   // Normalise une chaîne pour comparaison tolérante (accents, casse, ponctuation, espaces).
@@ -311,10 +359,12 @@
     return false;
   }
 
-  socket.on('game:answersUpdate', ({ answers }) => {
+  // Affiche les réponses détaillées des joueurs avec cases à cocher, sur
+  // l'écran de correction : c'est là que le maître du jeu valide les points.
+  function renderAnswersReview(answers) {
     const zone = document.getElementById('answersZone');
     if (!answers.length) {
-      zone.innerHTML = 'En attente de réponses...';
+      zone.innerHTML = 'Aucune réponse.';
       return;
     }
     zone.innerHTML = answers.map((a) => {
@@ -342,14 +392,14 @@
         btn.disabled = true;
       };
     });
-  });
+  }
 
   document.getElementById('revealBtn').onclick = () => {
     stopTimer();
     socket.emit('host:reveal', { code: roomCode });
   };
 
-  socket.on('game:revealHost', ({ title, artist, youtubeId, start, end, isLastQuestion }) => {
+  socket.on('game:revealHost', ({ title, artist, youtubeId, start, end, isLastQuestion, answers }) => {
     document.getElementById('phraseZone').style.display = 'none';
     document.getElementById('revealZone').style.display = 'block';
     document.getElementById('revealTitle').textContent = title;
@@ -366,6 +416,8 @@
     const iframe = document.getElementById('digiviewFrame');
     iframe.style.display = 'block';
     iframe.src = src;
+
+    renderAnswersReview(answers || []);
 
     document.getElementById('lastQuestionNotice').style.display = isLastQuestion ? 'block' : 'none';
     document.getElementById('nextRoundBtn').style.display = isLastQuestion ? 'none' : 'inline-flex';

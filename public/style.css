@@ -295,7 +295,7 @@ input[type="range"] {
 .answer-hint-box {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
   background: rgba(0, 0, 0, 0.22);
   border: 1px dashed rgba(251, 191, 36, 0.35);
   border-radius: var(--radius-md);
@@ -303,10 +303,118 @@ input[type="range"] {
   margin: 16px 0 22px;
 }
 
+.answer-hint-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .answer-hint-value {
   font-weight: 700;
   font-size: 1.05rem;
   color: var(--accent);
+  transition: filter 0.15s ease, opacity 0.15s ease;
+}
+
+.answer-hint-masked {
+  filter: blur(7px);
+  opacity: 0.6;
+  user-select: none;
+}
+
+/* ---------- Toggle switch ---------- */
+.toggle {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+}
+
+.toggle-track {
+  width: 46px;
+  height: 26px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid var(--surface-border);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.toggle-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.18s ease;
+}
+
+.toggle input:checked + .toggle-track {
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  border-color: var(--accent);
+}
+
+.toggle input:checked + .toggle-track .toggle-thumb {
+  transform: translateX(20px);
+}
+
+/* ---------- Player status grid (question phase) ---------- */
+.player-status-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  border: 1px solid transparent;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-chip-pending {
+  background: rgba(251, 113, 133, 0.14);
+  border-color: rgba(251, 113, 133, 0.35);
+  color: #fecdd3;
+}
+
+.status-chip-pending .status-dot {
+  background: var(--danger);
+  box-shadow: 0 0 8px rgba(251, 113, 133, 0.6);
+}
+
+.status-chip-ok {
+  background: rgba(52, 211, 153, 0.14);
+  border-color: rgba(52, 211, 153, 0.4);
+  color: #bbf7d0;
+}
+
+.status-chip-ok .status-dot {
+  background: var(--success);
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.6);
 }
 
 .reveal-card {

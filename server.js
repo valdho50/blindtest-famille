@@ -179,9 +179,14 @@ io.on('connection', (socket) => {
       payload.timerEndsAt = Date.now() + room.timerDuration * 1000;
     }
     io.to(code).emit('game:phrase', payload);
-    io.to(room.hostSocketId).emit('game:answersUpdate', { answers: [] });
+    // Roster des joueurs de la manche + statut (aucun n'a encore répondu) pour
+    // afficher les pastilles rouges/vertes côté maître du jeu, sans dévoiler
+    // le contenu des réponses avant la correction.
+    io.to(room.hostSocketId).emit('game:roundPlayers', { players: publicPlayers(room) });
+    io.to(room.hostSocketId).emit('game:answersStatus', { answeredIds: [] });
     // Réponse attendue envoyée uniquement au maître du jeu, dès le début de la manche,
     // pour qu'il puisse suivre/valider les réponses des joueurs en connaissance de cause.
+    // Restera masquée côté interface tant que le maître du jeu n'active pas l'interrupteur.
     io.to(room.hostSocketId).emit('game:answerHint', {
       title: song.title,
       artist: song.artist,
@@ -193,6 +198,15 @@ io.on('connection', (socket) => {
     if (!room || room.hostSocketId !== socket.id || !room.currentSong) return;
     room.phase = 'reveal';
     const song = room.currentSong;
+    // Les réponses détaillées de chaque joueur (y compris ceux qui n'ont rien
+    // envoyé) ne sont transmises qu'au moment de la correction, pour validation
+    // des points par le maître du jeu sur l'écran de correction.
+    const answers = Object.entries(room.players).map(([id, p]) => ({
+      id,
+      name: p.name,
+      titleGuess: room.pendingAnswers[id]?.titleGuess || '',
+      artistGuess: room.pendingAnswers[id]?.artistGuess || '',
+    }));
     // L'extrait audio (YouTube start/end) n'est envoyé qu'au maître du jeu,
     // qui le diffuse sur ses propres enceintes.
     io.to(room.hostSocketId).emit('game:revealHost', {
@@ -204,6 +218,7 @@ io.on('connection', (socket) => {
       isLastQuestion: room.questionsAsked >= room.questionCount,
       questionIndex: room.questionsAsked,
       questionCount: room.questionCount,
+      answers,
     });
     // Les joueurs voient seulement le titre/interprète, pas l'extrait audio.
     socket.to(code).emit('game:revealPlayers', {
@@ -251,14 +266,10 @@ io.on('connection', (socket) => {
     const room = rooms[code];
     if (!room || room.phase !== 'question') return;
     room.pendingAnswers[socket.id] = { titleGuess, artistGuess };
-    const player = room.players[socket.id];
-    const answers = Object.entries(room.pendingAnswers).map(([id, a]) => ({
-      id,
-      name: room.players[id]?.name,
-      titleGuess: a.titleGuess,
-      artistGuess: a.artistGuess,
-    }));
-    io.to(room.hostSocketId).emit('game:answersUpdate', { answers });
+    // Pendant la question, le maître du jeu ne voit que le statut "a répondu / pas
+    // encore" (pastille rouge/verte) — pas le contenu des réponses, réservé à
+    // l'écran de correction.
+    io.to(room.hostSocketId).emit('game:answersStatus', { answeredIds: Object.keys(room.pendingAnswers) });
   });
 
   socket.on('disconnect', () => {

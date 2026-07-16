@@ -122,15 +122,33 @@
       el.classList.toggle('timer-urgent', remaining <= 5);
       if (remaining <= 0) {
         stopTimer();
-        // Temps écoulé : on verrouille l'envoi si le joueur n'a pas encore répondu.
+        // Temps écoulé : on envoie automatiquement ce que le joueur a saisi/sélectionné
+        // jusqu'ici, s'il n'a pas déjà validé sa réponse lui-même.
         if (!document.getElementById('submitBtn').disabled) {
-          document.getElementById('submitBtn').disabled = true;
-          document.getElementById('submitBtn').textContent = 'Temps écoulé';
+          submitAnswer();
+          document.getElementById('submitBtn').textContent = 'Temps écoulé — réponse envoyée';
         }
       }
     };
     tick();
     timerInterval = setInterval(tick, 250);
+  }
+
+  // Envoie la réponse courante (saisie libre ou sélection QCM) au serveur.
+  // Utilisée à la fois par le clic sur "Envoyer ma réponse" et par l'auto-envoi
+  // déclenché quand le temps est écoulé.
+  function submitAnswer() {
+    let titleGuess, artistGuess;
+    if (currentMode === 'qcm') {
+      titleGuess = selectedTitle || '';
+      artistGuess = selectedArtist || '';
+    } else {
+      titleGuess = document.getElementById('titleGuess').value.trim();
+      artistGuess = document.getElementById('artistGuess').value.trim();
+    }
+    socket.emit('player:submitAnswer', { code: roomCode, titleGuess, artistGuess });
+    document.getElementById('submittedMsg').style.display = 'block';
+    document.getElementById('submitBtn').disabled = true;
   }
 
   socket.on('game:phrase', ({ phrase, mode, titleOptions, artistOptions, timerEndsAt }) => {
@@ -161,19 +179,7 @@
     if (timerEndsAt) startTimer(timerEndsAt); else stopTimer();
   });
 
-  document.getElementById('submitBtn').onclick = () => {
-    let titleGuess, artistGuess;
-    if (currentMode === 'qcm') {
-      titleGuess = selectedTitle || '';
-      artistGuess = selectedArtist || '';
-    } else {
-      titleGuess = document.getElementById('titleGuess').value.trim();
-      artistGuess = document.getElementById('artistGuess').value.trim();
-    }
-    socket.emit('player:submitAnswer', { code: roomCode, titleGuess, artistGuess });
-    document.getElementById('submittedMsg').style.display = 'block';
-    document.getElementById('submitBtn').disabled = true;
-  };
+  document.getElementById('submitBtn').onclick = submitAnswer;
 
   socket.on('game:revealPlayers', ({ title, artist }) => {
     stopTimer();
