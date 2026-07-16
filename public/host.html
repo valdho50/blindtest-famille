@@ -28,6 +28,10 @@
     <p>Thématique : <strong id="currentTheme"></strong></p>
     <div id="phraseZone" style="display:none;">
       <div class="phrase" id="phraseText"></div>
+      <div class="card" style="background:rgba(0,0,0,0.25); margin: 12px 0;">
+        <strong>Réponse attendue (visible uniquement par toi) :</strong>
+        <span id="answerHint"></span>
+      </div>
       <h3>Réponses des joueurs</h3>
       <div id="answersZone">En attente de réponses...</div>
       <button id="revealBtn" class="secondary">Lancer la correction</button>
@@ -36,6 +40,7 @@
       <h2 id="revealTitle"></h2>
       <p id="revealArtist"></p>
       <div id="youtube-player"></div>
+      <p id="videoError" style="display:none; color:#fca5a5; font-weight:bold;"></p>
       <p class="hint">L'extrait est diffusé depuis cet écran (pensez à activer le son / brancher des enceintes).</p>
       <button id="nextRoundBtn">Manche suivante</button>
       <button id="endGameBtn" class="secondary">Terminer la partie</button>
@@ -112,6 +117,10 @@
     document.getElementById('answersZone').innerHTML = 'En attente de réponses...';
   });
 
+  socket.on('game:answerHint', ({ title, artist }) => {
+    document.getElementById('answerHint').textContent = ` ${title} — ${artist}`;
+  });
+
   socket.on('game:answersUpdate', ({ answers }) => {
     const zone = document.getElementById('answersZone');
     if (!answers.length) {
@@ -151,6 +160,20 @@
     document.getElementById('revealTitle').textContent = title;
     document.getElementById('revealArtist').textContent = artist;
 
+    document.getElementById('videoError').style.display = 'none';
+    const onPlayerError = (event) => {
+      const messages = {
+        2: "identifiant vidéo invalide",
+        5: "erreur de lecture HTML5",
+        100: "vidéo introuvable ou supprimée",
+        101: "intégration (embed) refusée par l'ayant droit",
+        150: "intégration (embed) refusée par l'ayant droit",
+      };
+      const msg = messages[event.data] || 'erreur inconnue';
+      document.getElementById('videoError').textContent =
+        `⚠️ Impossible de lire cette vidéo (${msg}). Vérifie l'identifiant "${youtubeId}" dans data/songs.json.`;
+      document.getElementById('videoError').style.display = 'block';
+    };
     const startPlayer = () => {
       if (ytPlayer) {
         ytPlayer.loadVideoById({ videoId: youtubeId, startSeconds: start, endSeconds: end });
@@ -160,6 +183,7 @@
           width: '480',
           videoId: youtubeId,
           playerVars: { start, end, autoplay: 1 },
+          events: { onError: onPlayerError },
         });
       }
     };

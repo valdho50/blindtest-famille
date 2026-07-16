@@ -88,6 +88,12 @@ io.on('connection', (socket) => {
     room.pendingAnswers = {};
     io.to(code).emit('game:phrase', { phrase: song.phrase });
     io.to(room.hostSocketId).emit('game:answersUpdate', { answers: [] });
+    // Réponse attendue envoyée uniquement au maître du jeu, dès le début de la manche,
+    // pour qu'il puisse suivre/valider les réponses des joueurs en connaissance de cause.
+    io.to(room.hostSocketId).emit('game:answerHint', {
+      title: song.title,
+      artist: song.artist,
+    });
   });
 
   socket.on('host:reveal', ({ code }) => {
