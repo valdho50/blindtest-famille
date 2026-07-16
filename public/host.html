@@ -226,10 +226,10 @@
     // Intégration via DigiView (ladigitale.dev) : lecteur épuré, sans suggestions
     // ni pubs, restreint à la portion start/end de la vidéo YouTube.
     const vignette = encodeURIComponent(`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`);
-    const src = `https://ladigitale.dev/digiview/inc/video.php?videoId=${youtubeId}&vignette=${vignette}&debut=${start}&fin=${end}&largeur=480&hauteur=270`;
+    const src = `https://ladigitale.dev/digiview/inc/video.php?videoId=${youtubeId}&vignette=${vignette}&debut=${start}&fin=${end}&largeur=200&hauteur=150`;
     document.getElementById('youtube-player').innerHTML = `
       <iframe src="${src}" allow="picture-in-picture; autoplay; fullscreen" frameborder="0"
-        width="100%" height="auto" style="aspect-ratio: 480/270; max-width:480px; border-radius:12px;"></iframe>
+        width="100%" height="auto" style="aspect-ratio: 200/150; max-width:480px; border-radius:12px;"></iframe>
     `;
   });
 
