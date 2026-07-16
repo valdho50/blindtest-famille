@@ -137,66 +137,6 @@
           "end": 92
         }
       ]
-    },
-    {
-      "id": "rap-urban-fr",
-      "label": "Rap & Musique Urbaine",
-      "songs": [
-        {
-          "id": "ru1",
-          "phrase": "Mais moi je m'en bats les couilles, j'suis dans mon monde",
-          "title": "Le monde ou rien",
-          "artist": "PNL",
-          "youtubeId": "u6g07KsnFvU",
-          "start": 40,
-          "end": 70
-        },
-        {
-          "id": "ru2",
-          "phrase": "Petit frère a déserté les terrains de jeux",
-          "title": "Petit frère",
-          "artist": "IAM",
-          "youtubeId": "Gg7PZ-H9bE8",
-          "start": 30,
-          "end": 60
-        },
-        {
-          "id": "ru3",
-          "phrase": "On n'est pas fatigué, on est juste un peu usé",
-          "title": "La Lettre",
-          "artist": "Lunatic",
-          "youtubeId": "U3nI0eLg0C0",
-          "start": 20,
-          "end": 50
-        },
-        {
-          "id": "ru4",
-          "phrase": "Avant j'étais moche dans la cour de récré",
-          "title": "Dommage",
-          "artist": "Bigflo & Oli",
-          "youtubeId": "8Z6K_P19lpk",
-          "start": 5,
-          "end": 35
-        },
-        {
-          "id": "ru5",
-          "phrase": "Je t'aimais tellement, j'ai tout donné",
-          "title": "Bande Organisée",
-          "artist": "13 Organisé",
-          "youtubeId": "-EZ9U_bksgI",
-          "start": 75,
-          "end": 105
-        },
-        {
-          "id": "ru6",
-          "phrase": "La vie est belle, le destin fait les choses",
-          "title": "La vie est belle",
-          "artist": "Ninho",
-          "youtubeId": "a1P_o169p6M",
-          "start": 45,
-          "end": 75
-        }
-      ]
     }
   ]
 }
