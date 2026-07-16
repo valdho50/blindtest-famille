@@ -9,93 +9,192 @@
           "phrase": "Je suis venu te dire que je m'en vais",
           "title": "Je suis venu te dire que je m'en vais",
           "artist": "Serge Gainsbourg",
-          "youtubeId": "no9_hgauJeU",
-          "start": 10,
-          "end": 25
+          "youtubeId": "HJY8DRE68S8",
+          "start": 43,
+          "end": 73
         },
         {
           "id": "vf2",
-          "phrase": "On ira où tu voudras, quand tu voudras",
-          "title": "On ira",
-          "artist": "Zaz",
-          "youtubeId": "BiNLO5J0Cqw",
-          "start": 5,
-          "end": 20
+          "phrase": "Il suffira d'un signe, un matin",
+          "title": "Il suffira d'un signe",
+          "artist": "Jean-Jacques Goldman",
+          "youtubeId": "yGkS9mYgBOM",
+          "start": 55,
+          "end": 85
         },
         {
           "id": "vf3",
-          "phrase": "Emmène-moi au bout de la Terre",
-          "title": "Emmène-moi",
-          "artist": "Zaz",
-          "youtubeId": "hnlA5tvhTVI",
-          "start": 8,
-          "end": 23
+          "phrase": "Emmenez-moi au bout de la terre",
+          "title": "Emmenez-moi",
+          "artist": "Charles Aznavour",
+          "youtubeId": "Q9X9_p8P_k4",
+          "start": 50,
+          "end": 80
         },
         {
           "id": "vf4",
-          "phrase": "Je voudrais tellement que tu te souviennes",
-          "title": "La Javanaise",
-          "artist": "Serge Gainsbourg",
-          "youtubeId": "vP5RfKmDR3E",
-          "start": 5,
-          "end": 20
-        }
-      ]
-    },
-    {
-      "id": "ete",
-      "label": "Chansons d'été",
-      "songs": [
+          "phrase": "Ne me quitte pas, il faut oublier",
+          "title": "Ne me quitte pas",
+          "artist": "Jacques Brel",
+          "youtubeId": "q_LMPv703Y4",
+          "start": 10,
+          "end": 40
+        },
         {
-          "id": "et1",
-          "phrase": "Aux Champs-Élysées, au soleil, sous la pluie",
-          "title": "Les Champs-Élysées",
-          "artist": "Joe Dassin",
-          "youtubeId": "5xJlp9Rrjw0",
+          "id": "vf5",
+          "phrase": "J'ai encore rêvé d'elle, c'est bête, elle n'a rien fait pour ça",
+          "title": "J'ai encore rêvé d'elle",
+          "artist": "Il était une fois",
+          "youtubeId": "j79Ym3MvViw",
           "start": 15,
-          "end": 30
+          "end": 45
         },
         {
-          "id": "et2",
-          "phrase": "L'été indien, tu sais je n'oublierai jamais",
-          "title": "L'été indien",
-          "artist": "Joe Dassin",
-          "youtubeId": "GRAoxGZf2M4",
-          "start": 20,
-          "end": 35
+          "id": "vf6",
+          "phrase": "Pour le plaisir de recevoir un peu de tendresse",
+          "title": "Pour le plaisir",
+          "artist": "Herbert Léonard",
+          "youtubeId": "q8z4N49vI7s",
+          "start": 40,
+          "end": 70
         },
         {
-          "id": "et3",
-          "phrase": "Dernière danse, danse encore une fois",
-          "title": "Dernière danse",
-          "artist": "Indila",
-          "youtubeId": "K5KAc5CoCuk",
-          "start": 30,
+          "id": "vf7",
+          "phrase": "Je te promets le sel au baiser de ma bouche",
+          "title": "Je te promets",
+          "artist": "Johnny Hallyday",
+          "youtubeId": "b6fRaoWfG-4",
+          "start": 15,
           "end": 45
         }
       ]
     },
     {
-      "id": "rap-fr",
-      "label": "Rap français",
+      "id": "pop-classiques",
+      "label": "Pop & Classiques",
       "songs": [
         {
-          "id": "rf1",
-          "phrase": "Aujourd'hui commence le premier jour du reste de ta vie",
-          "title": "Le monde ou rien",
-          "artist": "PNL",
-          "youtubeId": "iEHtue4YUdA",
+          "id": "pc1",
+          "phrase": "Aux Champs-Élysées, au soleil, sous la pluie",
+          "title": "Les Champs-Élysées",
+          "artist": "Joe Dassin",
+          "youtubeId": "d9V-zUlrhSc",
           "start": 40,
+          "end": 70
+        },
+        {
+          "id": "pc2",
+          "phrase": "On ira où tu voudras, quand tu voudras",
+          "title": "L'été indien",
+          "artist": "Joe Dassin",
+          "youtubeId": "t_6Cfe9Zp_c",
+          "start": 25,
           "end": 55
         },
         {
-          "id": "rf2",
-          "phrase": "Petit frère fais gaffe à toi dans la rue",
-          "title": "Petit Frère",
+          "id": "pc3",
+          "phrase": "Dernière danse, pour oublier ma peine immense",
+          "title": "Dernière danse",
+          "artist": "Indila",
+          "youtubeId": "K5KAc5CoCuk",
+          "start": 50,
+          "end": 80
+        },
+        {
+          "id": "pc4",
+          "phrase": "Alors on danse, alors on danse",
+          "title": "Alors on danse",
+          "artist": "Stromae",
+          "youtubeId": "VjChZ7S8Pio",
+          "start": 48,
+          "end": 78
+        },
+        {
+          "id": "pc5",
+          "phrase": "Tout oublier, il faudrait tout oublier",
+          "title": "Tout oublier",
+          "artist": "Angèle",
+          "youtubeId": "Fy1xQZ2M9_Y",
+          "start": 12,
+          "end": 42
+        },
+        {
+          "id": "pc6",
+          "phrase": "Je l'aime à mourir, vous pouvez détruire",
+          "title": "Je l'aime à mourir",
+          "artist": "Francis Cabrel",
+          "youtubeId": "gfaP27X6TqI",
+          "start": 25,
+          "end": 55
+        },
+        {
+          "id": "pc7",
+          "phrase": "Envole-moi, envole-moi, loin de cette fatalité",
+          "title": "Envole-moi",
+          "artist": "Jean-Jacques Goldman",
+          "youtubeId": "dGgE_G2YfX8",
+          "start": 62,
+          "end": 92
+        }
+      ]
+    },
+    {
+      "id": "rap-urban-fr",
+      "label": "Rap & Musique Urbaine",
+      "songs": [
+        {
+          "id": "ru1",
+          "phrase": "Mais moi je m'en bats les couilles, j'suis dans mon monde",
+          "title": "Le monde ou rien",
+          "artist": "PNL",
+          "youtubeId": "u6g07KsnFvU",
+          "start": 40,
+          "end": 70
+        },
+        {
+          "id": "ru2",
+          "phrase": "Petit frère a déserté les terrains de jeux",
+          "title": "Petit frère",
+          "artist": "IAM",
+          "youtubeId": "Gg7PZ-H9bE8",
+          "start": 30,
+          "end": 60
+        },
+        {
+          "id": "ru3",
+          "phrase": "On n'est pas fatigué, on est juste un peu usé",
+          "title": "La Lettre",
+          "artist": "Lunatic",
+          "youtubeId": "U3nI0eLg0C0",
+          "start": 20,
+          "end": 50
+        },
+        {
+          "id": "ru4",
+          "phrase": "Avant j'étais moche dans la cour de récré",
+          "title": "Dommage",
           "artist": "Bigflo & Oli",
-          "youtubeId": "3AtDnEC4zak",
-          "start": 10,
-          "end": 25
+          "youtubeId": "8Z6K_P19lpk",
+          "start": 5,
+          "end": 35
+        },
+        {
+          "id": "ru5",
+          "phrase": "Je t'aimais tellement, j'ai tout donné",
+          "title": "Bande Organisée",
+          "artist": "13 Organisé",
+          "youtubeId": "-EZ9U_bksgI",
+          "start": 75,
+          "end": 105
+        },
+        {
+          "id": "ru6",
+          "phrase": "La vie est belle, le destin fait les choses",
+          "title": "La vie est belle",
+          "artist": "Ninho",
+          "youtubeId": "a1P_o169p6M",
+          "start": 45,
+          "end": 75
         }
       ]
     }
