@@ -1,0 +1,93 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  background: linear-gradient(135deg, #1e1b4b, #4c1d95);
+  color: #fff;
+  min-height: 100vh;
+}
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+}
+h1 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+.card {
+  background: rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(4px);
+}
+.code {
+  font-size: 3rem;
+  letter-spacing: 0.3em;
+  text-align: center;
+  font-weight: bold;
+  color: #fbbf24;
+}
+button {
+  background: #fbbf24;
+  color: #1e1b4b;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 4px;
+}
+button:hover { background: #f59e0b; }
+button.secondary {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+button.secondary:hover { background: rgba(255,255,255,0.25); }
+input {
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  font-size: 1rem;
+  width: 100%;
+  margin-bottom: 12px;
+}
+.phrase {
+  font-size: 1.6rem;
+  text-align: center;
+  font-style: italic;
+  padding: 20px;
+}
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+.theme-btn {
+  padding: 20px;
+  text-align: center;
+  font-size: 1.1rem;
+}
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.15); }
+.answer-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.answer-row .guesses { flex: 1; min-width: 200px; }
+.pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.15);
+  font-size: 0.85rem;
+  margin-left: 6px;
+}
+.scoreboard-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+#youtube-player { margin-top: 16px; }
+.hint { opacity: 0.7; font-size: 0.9rem; }

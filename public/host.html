@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Blind Test - Écran du maître du jeu</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="container">
+  <h1>🎵 Blind Test - Maître du jeu</h1>
+
+  <div id="setup" class="card">
+    <button id="createBtn">Créer une nouvelle partie</button>
+  </div>
+
+  <div id="lobby" class="card" style="display:none;">
+    <p>Code de partie (à donner aux joueurs) :</p>
+    <div class="code" id="roomCode">----</div>
+    <p class="hint">Les joueurs se connectent sur cet appareil, ouvrent player.html sur leur téléphone et saisissent ce code.</p>
+    <h3>Joueurs connectés</h3>
+    <div id="playerList">Aucun joueur pour l'instant.</div>
+    <h3>Choisir une thématique</h3>
+    <div id="themeGrid" class="theme-grid"></div>
+  </div>
+
+  <div id="game" class="card" style="display:none;">
+    <p>Thématique : <strong id="currentTheme"></strong></p>
+    <div id="phraseZone" style="display:none;">
+      <div class="phrase" id="phraseText"></div>
+      <h3>Réponses des joueurs</h3>
+      <div id="answersZone">En attente de réponses...</div>
+      <button id="revealBtn" class="secondary">Lancer la correction</button>
+    </div>
+    <div id="revealZone" style="display:none;">
+      <h2 id="revealTitle"></h2>
+      <p id="revealArtist"></p>
+      <div id="youtube-player"></div>
+      <p class="hint">L'extrait est diffusé depuis cet écran (pensez à activer le son / brancher des enceintes).</p>
+      <button id="nextRoundBtn">Manche suivante</button>
+      <button id="endGameBtn" class="secondary">Terminer la partie</button>
+    </div>
+    <div id="startRoundZone">
+      <button id="startRoundBtn">Lancer une manche</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🏆 Scores</h3>
+    <div id="scoreboard"></div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+  let roomCode = null;
+  let players = {};
+  let selectedTheme = null;
+  let ytPlayer = null;
+  let ytReady = false;
+
+  // --- YouTube IFrame API ---
+  const tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+  window.onYouTubeIframeAPIReady = () => { ytReady = true; };
+
+  document.getElementById('createBtn').onclick = () => {
+    socket.emit('host:create', (res) => {
+      roomCode = res.code;
+      document.getElementById('roomCode').textContent = roomCode;
+      document.getElementById('setup').style.display = 'none';
+      document.getElementById('lobby').style.display = 'block';
+      const grid = document.getElementById('themeGrid');
+      grid.innerHTML = '';
+      res.themes.forEach((t) => {
+        const btn = document.createElement('button');
+        btn.className = 'theme-btn secondary';
+        btn.textContent = `${t.label} (${t.count})`;
+        btn.onclick = () => {
+          socket.emit('host:selectTheme', { code: roomCode, themeId: t.id });
+        };
+        grid.appendChild(btn);
+      });
+    });
+  };
+
+  socket.on('lobby:update', ({ players: list }) => {
+    const el = document.getElementById('playerList');
+    el.innerHTML = list.length
+      ? list.map((p) => `<span class="pill">${p.name}</span>`).join(' ')
+      : 'Aucun joueur pour l\'instant.';
+  });
+
+  socket.on('game:themeSelected', ({ label }) => {
+    selectedTheme = label;
+    document.getElementById('lobby').style.display = 'none';
+    document.getElementById('game').style.display = 'block';
+    document.getElementById('currentTheme').textContent = label;
+  });
+
+  document.getElementById('startRoundBtn').onclick = () => {
+    socket.emit('host:startRound', { code: roomCode });
+    document.getElementById('startRoundZone').style.display = 'none';
+    document.getElementById('revealZone').style.display = 'none';
+    document.getElementById('phraseZone').style.display = 'block';
+  };
+
+  socket.on('game:phrase', ({ phrase }) => {
+    document.getElementById('phraseText').textContent = phrase;
+    document.getElementById('answersZone').innerHTML = 'En attente de réponses...';
+  });
+
+  socket.on('game:answersUpdate', ({ answers }) => {
+    const zone = document.getElementById('answersZone');
+    if (!answers.length) {
+      zone.innerHTML = 'En attente de réponses...';
+      return;
+    }
+    zone.innerHTML = answers.map((a) => `
+      <div class="answer-row" data-id="${a.id}">
+        <div class="guesses"><strong>${a.name}</strong> : titre = "${a.titleGuess || '—'}", interprète = "${a.artistGuess || '—'}"</div>
+        <div>
+          <label><input type="checkbox" class="titleOk"> titre ok</label>
+          <label><input type="checkbox" class="artistOk"> interprète ok</label>
+          <button class="validateBtn secondary">Valider</button>
+        </div>
+      </div>
+    `).join('');
+    zone.querySelectorAll('.validateBtn').forEach((btn) => {
+      btn.onclick = (e) => {
+        const row = e.target.closest('.answer-row');
+        const playerId = row.dataset.id;
+        const titleCorrect = row.querySelector('.titleOk').checked;
+        const artistCorrect = row.querySelector('.artistOk').checked;
+        socket.emit('host:validateAnswer', { code: roomCode, playerId, titleCorrect, artistCorrect });
+        btn.textContent = '✓ Validé';
+        btn.disabled = true;
+      };
+    });
+  });
+
+  document.getElementById('revealBtn').onclick = () => {
+    socket.emit('host:reveal', { code: roomCode });
+  };
+
+  socket.on('game:revealHost', ({ title, artist, youtubeId, start, end }) => {
+    document.getElementById('phraseZone').style.display = 'none';
+    document.getElementById('revealZone').style.display = 'block';
+    document.getElementById('revealTitle').textContent = title;
+    document.getElementById('revealArtist').textContent = artist;
+
+    const startPlayer = () => {
+      if (ytPlayer) {
+        ytPlayer.loadVideoById({ videoId: youtubeId, startSeconds: start, endSeconds: end });
+      } else {
+        ytPlayer = new YT.Player('youtube-player', {
+          height: '270',
+          width: '480',
+          videoId: youtubeId,
+          playerVars: { start, end, autoplay: 1 },
+        });
+      }
+    };
+    if (ytReady) startPlayer(); else window.onYouTubeIframeAPIReady = () => { ytReady = true; startPlayer(); };
+  });
+
+  document.getElementById('nextRoundBtn').onclick = () => {
+    document.getElementById('revealZone').style.display = 'none';
+    document.getElementById('startRoundZone').style.display = 'block';
+  };
+
+  document.getElementById('endGameBtn').onclick = () => {
+    socket.emit('host:endGame', { code: roomCode });
+  };
+
+  socket.on('game:ended', ({ players: list }) => {
+    alert('Partie terminée ! Scores finaux :\n' + list.map(p => `${p.name} : ${p.score}`).join('\n'));
+    location.reload();
+  });
+
+  socket.on('game:scoreboard', ({ players: list }) => {
+    const el = document.getElementById('scoreboard');
+    const sorted = [...list].sort((a, b) => b.score - a.score);
+    el.innerHTML = sorted.map((p) => `
+      <div class="scoreboard-item"><span>${p.name}</span><span>${p.score} pt${p.score > 1 ? 's' : ''}</span></div>
+    `).join('') || 'Aucun joueur.';
+  });
+
+  socket.on('game:hostLeft', () => {
+    alert('La connexion au serveur a été interrompue.');
+  });
+</script>
+</body>
+</html>

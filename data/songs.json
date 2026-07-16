@@ -1,0 +1,103 @@
+{
+  "themes": [
+    {
+      "id": "variete-fr",
+      "label": "Variété française",
+      "songs": [
+        {
+          "id": "vf1",
+          "phrase": "Je suis venu te dire que je m'en vais",
+          "title": "Je suis venu te dire que je m'en vais",
+          "artist": "Serge Gainsbourg",
+          "youtubeId": "6ov4KToWKF0",
+          "start": 10,
+          "end": 25
+        },
+        {
+          "id": "vf2",
+          "phrase": "On ira où tu voudras, quand tu voudras",
+          "title": "On ira",
+          "artist": "Zaz",
+          "youtubeId": "GdyMHqIfXCY",
+          "start": 5,
+          "end": 20
+        },
+        {
+          "id": "vf3",
+          "phrase": "Emmène-moi au bout de la Terre",
+          "title": "Emmène-moi",
+          "artist": "Zaz",
+          "youtubeId": "hnlA5tvhTVI",
+          "start": 8,
+          "end": 23
+        },
+        {
+          "id": "vf4",
+          "phrase": "Je voudrais tellement que tu te souviennes",
+          "title": "La Javanaise",
+          "artist": "Serge Gainsbourg",
+          "youtubeId": "vP5RfKmDR3E",
+          "start": 5,
+          "end": 20
+        }
+      ]
+    },
+    {
+      "id": "ete",
+      "label": "Chansons d'été",
+      "songs": [
+        {
+          "id": "et1",
+          "phrase": "Aux Champs-Élysées, au soleil, sous la pluie",
+          "title": "Les Champs-Élysées",
+          "artist": "Joe Dassin",
+          "youtubeId": "5xJlp9Rrjw0",
+          "start": 15,
+          "end": 30
+        },
+        {
+          "id": "et2",
+          "phrase": "L'été indien, tu sais je n'oublierai jamais",
+          "title": "L'été indien",
+          "artist": "Joe Dassin",
+          "youtubeId": "GRAoxGZf2M4",
+          "start": 20,
+          "end": 35
+        },
+        {
+          "id": "et3",
+          "phrase": "Dernière danse, danse encore une fois",
+          "title": "Dernière danse",
+          "artist": "Indila",
+          "youtubeId": "K5KAc5CoCuk",
+          "start": 30,
+          "end": 45
+        }
+      ]
+    },
+    {
+      "id": "rap-fr",
+      "label": "Rap français",
+      "songs": [
+        {
+          "id": "rf1",
+          "phrase": "Aujourd'hui commence le premier jour du reste de ta vie",
+          "title": "Le monde ou rien",
+          "artist": "PNL",
+          "youtubeId": "iEHtue4YUdA",
+          "start": 40,
+          "end": 55
+        },
+        {
+          "id": "rf2",
+          "phrase": "Petit frère fais gaffe à toi dans la rue",
+          "title": "Petit Frère",
+          "artist": "Bigflo & Oli",
+          "youtubeId": "3AtDnEC4zak",
+          "start": 10,
+          "end": 25
+        }
+      ]
+    }
+  ]
+}

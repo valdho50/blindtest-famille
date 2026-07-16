@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Blind Test - Joueur</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="container">
+  <h1>🎵 Blind Test</h1>
+
+  <div id="joinZone" class="card">
+    <p>Code de la partie</p>
+    <input id="codeInput" maxlength="4" placeholder="ex : 4821" inputmode="numeric" />
+    <p>Ton pseudo</p>
+    <input id="nameInput" maxlength="20" placeholder="ex : Cédric" />
+    <button id="joinBtn">Rejoindre la partie</button>
+    <p id="joinError" style="color:#fca5a5;"></p>
+  </div>
+
+  <div id="waitZone" class="card" style="display:none;">
+    <p>Tu es bien connecté ! En attente du maître du jeu...</p>
+  </div>
+
+  <div id="questionZone" class="card" style="display:none;">
+    <div class="phrase" id="phraseText"></div>
+    <p>Titre de la chanson</p>
+    <input id="titleGuess" placeholder="Titre..." />
+    <p>Interprète</p>
+    <input id="artistGuess" placeholder="Interprète..." />
+    <button id="submitBtn">Envoyer ma réponse</button>
+    <p id="submittedMsg" style="display:none;">✓ Réponse envoyée</p>
+  </div>
+
+  <div id="revealZone" class="card" style="display:none;">
+    <p>La bonne réponse était :</p>
+    <h2 id="revealTitle"></h2>
+    <p id="revealArtist"></p>
+    <p class="hint">Écoute l'extrait diffusé par le maître du jeu !</p>
+  </div>
+
+  <div class="card">
+    <h3>🏆 Scores</h3>
+    <div id="scoreboard"></div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+  let roomCode = null;
+
+  document.getElementById('joinBtn').onclick = () => {
+    const code = document.getElementById('codeInput').value.trim();
+    const name = document.getElementById('nameInput').value.trim() || 'Joueur';
+    if (!code) {
+      document.getElementById('joinError').textContent = 'Entre un code de partie.';
+      return;
+    }
+    socket.emit('player:join', { code, name }, (res) => {
+      if (!res.ok) {
+        document.getElementById('joinError').textContent = res.error;
+        return;
+      }
+      roomCode = code;
+      document.getElementById('joinZone').style.display = 'none';
+      document.getElementById('waitZone').style.display = 'block';
+    });
+  };
+
+  socket.on('game:phrase', ({ phrase }) => {
+    document.getElementById('waitZone').style.display = 'none';
+    document.getElementById('revealZone').style.display = 'none';
+    document.getElementById('questionZone').style.display = 'block';
+    document.getElementById('phraseText').textContent = phrase;
+    document.getElementById('titleGuess').value = '';
+    document.getElementById('artistGuess').value = '';
+    document.getElementById('submittedMsg').style.display = 'none';
+    document.getElementById('submitBtn').disabled = false;
+  });
+
+  document.getElementById('submitBtn').onclick = () => {
+    const titleGuess = document.getElementById('titleGuess').value.trim();
+    const artistGuess = document.getElementById('artistGuess').value.trim();
+    socket.emit('player:submitAnswer', { code: roomCode, titleGuess, artistGuess });
+    document.getElementById('submittedMsg').style.display = 'block';
+    document.getElementById('submitBtn').disabled = true;
+  };
+
+  socket.on('game:revealPlayers', ({ title, artist }) => {
+    document.getElementById('questionZone').style.display = 'none';
+    document.getElementById('revealZone').style.display = 'block';
+    document.getElementById('revealTitle').textContent = title;
+    document.getElementById('revealArtist').textContent = artist;
+  });
+
+  socket.on('game:scoreboard', ({ players: list }) => {
+    const el = document.getElementById('scoreboard');
+    const sorted = [...list].sort((a, b) => b.score - a.score);
+    el.innerHTML = sorted.map((p) => `
+      <div class="scoreboard-item"><span>${p.name}</span><span>${p.score} pt${p.score > 1 ? 's' : ''}</span></div>
+    `).join('') || 'Aucun joueur.';
+  });
+
+  socket.on('game:ended', ({ players: list }) => {
+    alert('Partie terminée ! Merci d\'avoir joué 🎉');
+  });
+
+  socket.on('game:hostLeft', () => {
+    alert('Le maître du jeu a quitté la partie.');
+  });
+</script>
+</body>
+</html>
