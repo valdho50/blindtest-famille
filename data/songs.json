@@ -186,6 +186,282 @@
       "themes": [
         "pop-classiques"
       ]
+    },
+    {
+      "id": "vf8",
+      "phrase": "Que les choses ont changé, que les fleurs ont fané, que le temps d'avant, c'était le temps d'avant",
+      "title": "Pour que tu m'aimes encore",
+      "artist": "Céline Dion",
+      "youtubeId": "AzaTyxMduH4",
+      "start": 15,
+      "end": 45,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "vf9",
+      "phrase": "Et même s'il faut partir, changer de terre ou de trace",
+      "title": "Au bout de mes rêves",
+      "artist": "Jean-Jacques Goldman",
+      "youtubeId": "o3hX0DU1QoI",
+      "start": 50,
+      "end": 80,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "vf10",
+      "phrase": "Et puisque tu penses comme une intime évidence que parfois même tout donner n'est pas forcément suffire",
+      "title": "Puisque tu pars",
+      "artist": "Jean-Jacques Goldman",
+      "youtubeId": "ly2IHt74Xhg",
+      "start": 20,
+      "end": 50,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "vf11",
+      "phrase": "On a tant d'amour à faire, tant de bonheur à venir, je te veux mari et père, et toi, tu rêves de partir",
+      "title": "Là-bas",
+      "artist": "Jean-Jacques Goldman",
+      "youtubeId": "zFwaRmpzvjo",
+      "start": 95,
+      "end": 125,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "vf12",
+      "phrase": "Avec mes souvenirs j'ai allumé le feu, mes chagrins, mes plaisirs, je n'ai plus besoin d'eux",
+      "title": "Non, je ne regrette rien",
+      "artist": "Edith Piaf",
+      "youtubeId": "Q3Kvu6Kgp88",
+      "start": 35,
+      "end": 65,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "vf13",
+      "phrase": "Et si tu crois que c'est fini, jamais, c'est juste une pause, un répit après les dangers",
+      "title": "Sous le vent",
+      "artist": "Garou et Céline Dion",
+      "youtubeId": "a2_ss9y-VjE",
+      "start": 55,
+      "end": 85,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "vf14",
+      "phrase": "C'est fou c'qu'un crépuscule de printemps rappelle le même crépuscule d'y a 10 ans, trottoirs usés par les regards baissés, qu'est-ce que j'ai fait de ces années ?",
+      "title": "Place des grands hommes",
+      "artist": "Patrick Bruel",
+      "youtubeId": "C9K5_AwMGdw",
+      "start": 45,
+      "end": 75,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "pc8",
+      "phrase": "Il y a ceux qui veulent mourir un jour de pluie et d'autres en plein soleil, il y a ceux qui veulent mourir seuls dans un lit tranquilles dans leur sommeil",
+      "title": "Mourir sur scène",
+      "artist": "Dalida",
+      "youtubeId": "qxIQVeppGQY",
+      "start": 30,
+      "end": 60,
+      "themes": [
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "pc9",
+      "phrase": "Nous irons voir ensemble les jardins refleuris et déambulerons dans les rues de Paris",
+      "title": "Dis, quand reviendras-tu",
+      "artist": "Barbara",
+      "youtubeId": "nUE80DTNxK4",
+      "start": 20,
+      "end": 50,
+      "themes": [
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "vf15",
+      "phrase": "Savoir attendre, goûter à ce plein bonheur qu'on vous donne comme par erreur, tant on ne l'attendait plus",
+      "title": "Savoir Aimer",
+      "artist": "Florent Pagny",
+      "youtubeId": "g-gh2hIRhkc",
+      "start": 55,
+      "end": 85,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "pc10",
+      "phrase": "Et perdue parmi ces gens qui me bousculent, étourdie, désemparée, je reste là",
+      "title": "La foule",
+      "artist": "Edith Piaf",
+      "youtubeId": "Fgn8gZHJZzA",
+      "start": 15,
+      "end": 45,
+      "themes": [
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "vf16",
+      "phrase": "On s'est moqué tellement d'fois des gens qui faisaient ça",
+      "title": "J'te l'dis quand même",
+      "artist": "Patrick Bruel",
+      "youtubeId": "7pYsogUGPoY",
+      "start": 25,
+      "end": 55,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "vf17",
+      "phrase": "A moi, à la folie dont tu es la raison, à mes colères sans savoir pourquoi",
+      "title": "A toi",
+      "artist": "Joe Dassin",
+      "youtubeId": "xwiPiQFqD-U",
+      "start": 60,
+      "end": 90,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "pc11",
+      "phrase": "Et si l'humble garni qui nous servait de nid ne payait pas de mine, c'est là qu'on s'est connu",
+      "title": "La bohème",
+      "artist": "Charles Aznavour",
+      "youtubeId": "fVfnEyLOkrM",
+      "start": 20,
+      "end": 50,
+      "themes": [
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "pc12",
+      "phrase": "Y avait qu'un dimanche par semaine, les autres jours, c'était la graine",
+      "title": "Mon vieux",
+      "artist": "Daniel Guichard",
+      "youtubeId": "x8l43czQAy4",
+      "start": 25,
+      "end": 55,
+      "themes": [
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "vf18",
+      "phrase": "Si tu réalises que la vie n'est pas là, que le matin tu te lèves sans savoir où tu vas",
+      "title": "Résiste",
+      "artist": "France Gall",
+      "youtubeId": "SPBVplEp7xE",
+      "start": 25,
+      "end": 55,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "pc13",
+      "phrase": "Vous mes amis essayez de comprendre, une seule fille au monde peut me rendre tout ce que j'ai perdu, je sais qu'elle ne reviendra pas",
+      "title": "Qui saura",
+      "artist": "Mike Brant",
+      "youtubeId": "4FN_8L7dSBc",
+      "start": 45,
+      "end": 75,
+      "themes": [
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "vf19",
+      "phrase": "Sean Kelly s'est dit : je suis catholique, Maureen aussi",
+      "title": "Les lacs du Connemara",
+      "artist": "Michel Sardou",
+      "youtubeId": "bpEmjxobvbY",
+      "start": 65,
+      "end": 95,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "vf20",
+      "phrase": "Si j'avais su qu'un matin je serai là, sali, jugé, sur un banc, par l'ombre d'un corps que j'ai serré si souvent pour un enfant",
+      "title": "Mon fils ma bataille",
+      "artist": "Daniel Balavoine",
+      "youtubeId": "vUOxbQO6IE4",
+      "start": 15,
+      "end": 45,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "vf21",
+      "phrase": "A faire flamber des enfers dans tes yeux, à faire jurer tous les tonnerres de Dieu",
+      "title": "Je vais t'aimer",
+      "artist": "Michel Sardou",
+      "youtubeId": "DyvukrAgZ-g",
+      "start": 20,
+      "end": 50,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "vf22",
+      "phrase": "On sourit en revoyant sur les photos jaunies l'air un peu trop sûr de soi que l'on prend à seize ans",
+      "title": "Du côté de chez Swann",
+      "artist": "Dave",
+      "youtubeId": "SzvC1OWCBL4",
+      "start": 15,
+      "end": 45,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "pc14",
+      "phrase": "À corps perdu j'ai couru, assoiffé, obstiné, vers l'horizon, l'illusion, vers l'abstrait",
+      "title": "Mes emmerdes",
+      "artist": "Charles Aznavour",
+      "youtubeId": "2r5eblPTpAI",
+      "start": 30,
+      "end": 60,
+      "themes": [
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "vf23",
+      "phrase": "Tous les hommes vont en galère à la pêche ou à la guerre",
+      "title": "En chantant",
+      "artist": "Michel Sardou",
+      "youtubeId": "CHp4Z8xZpsM",
+      "start": 75,
+      "end": 105,
+      "themes": [
+        "variete-fr"
+      ]
     }
   ]
 }
