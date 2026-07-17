@@ -39,13 +39,21 @@ Blind test prêt sur http://localhost:3000
 
 ## Ajouter / modifier des chansons
 
-Édite directement `data/songs.json`. Chaque thématique contient une liste de chansons avec :
-- `phrase` : la phrase proposée aux joueurs
-- `title`, `artist` : la bonne réponse
-- `youtubeId` : l'identifiant de la vidéo YouTube (partie après `v=` dans l'URL)
-- `start`, `end` : le timecode (en secondes) de l'extrait à jouer au moment de la correction
+Le contenu se gère via deux fichiers CSV, plus faciles à compléter que le JSON directement :
 
-Tu peux aussi ajouter de nouvelles thématiques en dupliquant un bloc `{ "id": ..., "label": ..., "songs": [...] }`.
+- `data/themes.csv` : `id,label` — une ligne par thématique.
+- `data/songs.csv` : `id,phrase,title,artist,youtubeId,start,end,themes` — une ligne par chanson.
+  - `phrase` : la phrase proposée aux joueurs
+  - `title`, `artist` : la bonne réponse
+  - `youtubeId` : l'identifiant de la vidéo YouTube (partie après `v=` dans l'URL)
+  - `start`, `end` : le timecode (en secondes) de l'extrait à jouer au moment de la correction
+  - `themes` : un ou plusieurs id de thématique (voir `themes.csv`), séparés par `;` — une chanson peut appartenir à plusieurs thématiques (ex. `pop-classiques;tubes-ete`)
+
+Une fois les CSV à jour, régénère `data/songs.json` (lu par le serveur) avec :
+```bash
+python3 data/songs_csv_to_json.py
+```
+Le script signale les id de thématique inconnus ou les id de chanson en double, sans planter.
 
 ## Limites connues de ce prototype
 
