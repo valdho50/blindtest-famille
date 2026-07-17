@@ -35,14 +35,22 @@ function publicPlayers(room) {
   }));
 }
 
+// Toutes les chansons (chaque chanson peut appartenir à plusieurs thématiques
+// via son tableau `themes`). Sert aussi à piocher des leurres QCM même si la
+// thématique en cours n'a pas assez de titres différents.
+const allSongs = songData.songs;
+const allTitles = [...new Set(allSongs.map((s) => s.title))];
+const allArtists = [...new Set(allSongs.map((s) => s.artist))];
+
 // Pioche une chanson jamais encore proposée durant cette partie. Priorité aux
-// chansons de la thématique choisie ; si elle est épuisée, on pioche parmi les
-// autres thématiques plutôt que de répéter un titre déjà joué. Retourne null si
-// vraiment toutes les chansons connues ont déjà servi.
+// chansons rattachées à la thématique choisie (une chanson peut appartenir à
+// plusieurs thématiques) ; si elle est épuisée, on pioche parmi toutes les
+// chansons plutôt que de répéter un titre déjà joué. Retourne null si vraiment
+// toutes les chansons connues ont déjà servi.
 function pickSong(room, themeId) {
-  const theme = songData.themes.find((t) => t.id === themeId);
-  if (!theme) return null;
-  let available = theme.songs.filter((s) => !room.usedSongIds.has(s.id));
+  const themeSongs = allSongs.filter((s) => s.themes.includes(themeId));
+  if (themeSongs.length === 0) return null;
+  let available = themeSongs.filter((s) => !room.usedSongIds.has(s.id));
   if (available.length === 0) {
     available = allSongs.filter((s) => !room.usedSongIds.has(s.id));
   }
@@ -51,12 +59,6 @@ function pickSong(room, themeId) {
   room.usedSongIds.add(song.id);
   return song;
 }
-
-// Toutes les chansons, toutes thématiques confondues (pour piocher des leurres QCM
-// même si la thématique en cours n'a pas assez de titres différents).
-const allSongs = songData.themes.flatMap((t) => t.songs);
-const allTitles = [...new Set(allSongs.map((s) => s.title))];
-const allArtists = [...new Set(allSongs.map((s) => s.artist))];
 
 function shuffle(arr) {
   const a = [...arr];
@@ -104,7 +106,11 @@ io.on('connection', (socket) => {
     socket.data.isHost = true;
     cb({
       code,
-      themes: songData.themes.map((t) => ({ id: t.id, label: t.label, count: t.songs.length })),
+      themes: songData.themes.map((t) => ({
+        id: t.id,
+        label: t.label,
+        count: allSongs.filter((s) => s.themes.includes(t.id)).length,
+      })),
       questionCount: rooms[code].questionCount,
     });
   });

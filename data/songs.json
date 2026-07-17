@@ -2,140 +2,189 @@
   "themes": [
     {
       "id": "variete-fr",
-      "label": "Variété française",
-      "songs": [
-        {
-          "id": "vf1",
-          "phrase": "Tu t'souviens de jours anciens et tu pleures, tu suffoques, tu blêmis à présent qu'a sonné l'heure",
-          "title": "Je suis venu te dire que je m'en vais",
-          "artist": "Serge Gainsbourg",
-          "youtubeId": "6RAJdafk1Y8",
-          "start": 43,
-          "end": 73
-        },
-        {
-          "id": "vf2",
-          "phrase": "Regarde ma vie, tu la vois face à face, dis-moi ton avis, que veux-tu que j'y fasse",
-          "title": "Il suffira d'un signe",
-          "artist": "Jean-Jacques Goldman",
-          "youtubeId": "Vav-2sgJ4MI",
-          "start": 55,
-          "end": 85
-        },
-        {
-          "id": "vf3",
-          "phrase": "Dans les bars à la tombée du jour, avec les marins, quand on parle de filles et d'amour, un verre à la main",
-          "title": "Emmenez-moi",
-          "artist": "Charles Aznavour",
-          "youtubeId": "0OrKMaeQUx0",
-          "start": 50,
-          "end": 80
-        },
-        {
-          "id": "vf4",
-          "phrase": "Je creuserai la terre jusqu'après ma mort, pour couvrir ton corps d'or et de lumière",
-          "title": "Ne me quitte pas",
-          "artist": "Jacques Brel",
-          "youtubeId": "oR_SZR_tmxM",
-          "start": 10,
-          "end": 40
-        },
-        {
-          "id": "vf5",
-          "phrase": "Si je pouvais me réveiller à ses côtés, si je savais où la trouver",
-          "title": "J'ai encore rêvé d'elle",
-          "artist": "Il était une fois",
-          "youtubeId": "jGRaXdT2-58",
-          "start": 15,
-          "end": 45
-        },
-        {
-          "id": "vf6",
-          "phrase": "Prendre le temps, de temps en temps, de refaire d'un homme un enfant et s'éblouir",
-          "title": "Pour le plaisir",
-          "artist": "Herbert Léonard",
-          "youtubeId": "2fy-h6QcfkE",
-          "start": 40,
-          "end": 70
-        },
-        {
-          "id": "vf7",
-          "phrase": "J'y crois comme à la terre, j'y crois comme au soleil, j'y crois comme un enfant, comme on peut croire au ciel",
-          "title": "Je te promets",
-          "artist": "Johnny Hallyday",
-          "youtubeId": "-TkrMyXYbik",
-          "start": 15,
-          "end": 45
-        }
-      ]
+      "label": "Variété française"
     },
     {
       "id": "pop-classiques",
-      "label": "Pop & Classiques",
-      "songs": [
-        {
-          "id": "pc1",
-          "phrase": "Tu m'as dit j'ai rendez-vous dans un sous-sol avec des fous, qui vivent la guitare à la main, du soir au matin",
-          "title": "Les Champs-Élysées",
-          "artist": "Joe Dassin",
-          "youtubeId": "tDWeLlvYyYU",
-          "start": 40,
-          "end": 70
-        },
-        {
-          "id": "pc2",
-          "phrase": "Je regarde cette vague qui n'atteindra jamais la dune, tu vois, comme elle je reviens en arrière",
-          "title": "L'été indien",
-          "artist": "Joe Dassin",
-          "youtubeId": "tQb4eWCAq8c",
-          "start": 25,
-          "end": 55
-        },
-        {
-          "id": "pc3",
-          "phrase": "Et dans le bruit, je cours et j'ai peur, est-ce mon tour ? Revient la douleur...",
-          "title": "Dernière danse",
-          "artist": "Indila",
-          "youtubeId": "K5KAc5CoCuk",
-          "start": 50,
-          "end": 80
-        },
-        {
-          "id": "pc4",
-          "phrase": "Qui dit crise te dit monde, dit famine dit tiers-monde, qui dit fatigue dit réveille encore sourd de la veille",
-          "title": "Alors on danse",
-          "artist": "Stromae",
-          "youtubeId": "VHoT4N43jK8",
-          "start": 48,
-          "end": 78
-        },
-        {
-          "id": "pc5",
-          "phrase": "Le spleen n'est plus à la mode, c'est pas compliqué d'être heureux",
-          "title": "Tout oublier",
-          "artist": "Angèle",
-          "youtubeId": "Fy1xQSiLx8U",
-          "start": 12,
-          "end": 42
-        },
-        {
-          "id": "pc6",
-          "phrase": "Elle a gommé les chiffres des horloges du quartier, elle a fait de ma vie des cocottes en papier, des éclats de rire",
-          "title": "Je l'aime à mourir",
-          "artist": "Francis Cabrel",
-          "youtubeId": "MzvlalfN0Es",
-          "start": 25,
-          "end": 55
-        },
-        {
-          "id": "pc7",
-          "phrase": "J'ai pas choisi de vivre ici, entre la soumission, la peur ou l'abandon, je m'en sortirai, je te le jure",
-          "title": "Envole-moi",
-          "artist": "Jean-Jacques Goldman",
-          "youtubeId": "oltptNDHocw",
-          "start": 62,
-          "end": 92
-        }
+      "label": "Pop & Classiques"
+    },
+    {
+      "id": "annees-80",
+      "label": "Années 80"
+    },
+    {
+      "id": "tubes-ete",
+      "label": "Tubes de l'été"
+    }
+  ],
+  "songs": [
+    {
+      "id": "vf1",
+      "phrase": "Tu t'souviens de jours anciens et tu pleures, tu suffoques, tu blêmis à présent qu'a sonné l'heure",
+      "title": "Je suis venu te dire que je m'en vais",
+      "artist": "Serge Gainsbourg",
+      "youtubeId": "6RAJdafk1Y8",
+      "start": 43,
+      "end": 73,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "vf2",
+      "phrase": "Regarde ma vie, tu la vois face à face, dis-moi ton avis, que veux-tu que j'y fasse",
+      "title": "Il suffira d'un signe",
+      "artist": "Jean-Jacques Goldman",
+      "youtubeId": "Vav-2sgJ4MI",
+      "start": 55,
+      "end": 85,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "vf3",
+      "phrase": "Dans les bars à la tombée du jour, avec les marins, quand on parle de filles et d'amour, un verre à la main",
+      "title": "Emmenez-moi",
+      "artist": "Charles Aznavour",
+      "youtubeId": "0OrKMaeQUx0",
+      "start": 50,
+      "end": 80,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "vf4",
+      "phrase": "Je creuserai la terre jusqu'après ma mort, pour couvrir ton corps d'or et de lumière",
+      "title": "Ne me quitte pas",
+      "artist": "Jacques Brel",
+      "youtubeId": "oR_SZR_tmxM",
+      "start": 10,
+      "end": 40,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "vf5",
+      "phrase": "Si je pouvais me réveiller à ses côtés, si je savais où la trouver",
+      "title": "J'ai encore rêvé d'elle",
+      "artist": "Il était une fois",
+      "youtubeId": "jGRaXdT2-58",
+      "start": 15,
+      "end": 45,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "vf6",
+      "phrase": "Prendre le temps, de temps en temps, de refaire d'un homme un enfant et s'éblouir",
+      "title": "Pour le plaisir",
+      "artist": "Herbert Léonard",
+      "youtubeId": "2fy-h6QcfkE",
+      "start": 40,
+      "end": 70,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "vf7",
+      "phrase": "J'y crois comme à la terre, j'y crois comme au soleil, j'y crois comme un enfant, comme on peut croire au ciel",
+      "title": "Je te promets",
+      "artist": "Johnny Hallyday",
+      "youtubeId": "-TkrMyXYbik",
+      "start": 15,
+      "end": 45,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "pc1",
+      "phrase": "Tu m'as dit j'ai rendez-vous dans un sous-sol avec des fous, qui vivent la guitare à la main, du soir au matin",
+      "title": "Les Champs-Élysées",
+      "artist": "Joe Dassin",
+      "youtubeId": "tDWeLlvYyYU",
+      "start": 40,
+      "end": 70,
+      "themes": [
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "pc2",
+      "phrase": "Je regarde cette vague qui n'atteindra jamais la dune, tu vois, comme elle je reviens en arrière",
+      "title": "L'été indien",
+      "artist": "Joe Dassin",
+      "youtubeId": "tQb4eWCAq8c",
+      "start": 25,
+      "end": 55,
+      "themes": [
+        "pop-classiques",
+        "tubes-ete"
+      ]
+    },
+    {
+      "id": "pc3",
+      "phrase": "Et dans le bruit, je cours et j'ai peur, est-ce mon tour ? Revient la douleur...",
+      "title": "Dernière danse",
+      "artist": "Indila",
+      "youtubeId": "K5KAc5CoCuk",
+      "start": 50,
+      "end": 80,
+      "themes": [
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "pc4",
+      "phrase": "Qui dit crise te dit monde, dit famine dit tiers-monde, qui dit fatigue dit réveille encore sourd de la veille",
+      "title": "Alors on danse",
+      "artist": "Stromae",
+      "youtubeId": "VHoT4N43jK8",
+      "start": 48,
+      "end": 78,
+      "themes": [
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "pc5",
+      "phrase": "Le spleen n'est plus à la mode, c'est pas compliqué d'être heureux",
+      "title": "Tout oublier",
+      "artist": "Angèle",
+      "youtubeId": "Fy1xQSiLx8U",
+      "start": 12,
+      "end": 42,
+      "themes": [
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "pc6",
+      "phrase": "Elle a gommé les chiffres des horloges du quartier, elle a fait de ma vie des cocottes en papier, des éclats de rire",
+      "title": "Je l'aime à mourir",
+      "artist": "Francis Cabrel",
+      "youtubeId": "MzvlalfN0Es",
+      "start": 25,
+      "end": 55,
+      "themes": [
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "pc7",
+      "phrase": "J'ai pas choisi de vivre ici, entre la soumission, la peur ou l'abandon, je m'en sortirai, je te le jure",
+      "title": "Envole-moi",
+      "artist": "Jean-Jacques Goldman",
+      "youtubeId": "oltptNDHocw",
+      "start": 62,
+      "end": 92,
+      "themes": [
+        "pop-classiques"
       ]
     }
   ]
