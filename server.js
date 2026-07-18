@@ -6,6 +6,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const grist = require('./grist');
+const resendClient = require('./resend');
 
 const app = express();
 const server = http.createServer(app);
@@ -52,6 +53,29 @@ function getFreeThemeIds() {
   return songData.themes.filter((t) => t.free).map((t) => t.id);
 }
 
+// --- Tokens de réinitialisation de mot de passe ---
+// resetTokens[token] = { hostRowId, username, createdAt }
+// En mémoire, comme le reste de l'état : un redémarrage du serveur invalide
+// les demandes de réinitialisation en cours (l'utilisateur referait la demande).
+const resetTokens = {};
+const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1h
+
+function createResetToken({ hostRowId, username }) {
+  const token = crypto.randomUUID();
+  resetTokens[token] = { hostRowId, username, createdAt: Date.now() };
+  return token;
+}
+
+function getResetToken(token) {
+  const entry = resetTokens[token];
+  if (!entry) return null;
+  if (Date.now() - entry.createdAt > RESET_TOKEN_TTL_MS) {
+    delete resetTokens[token];
+    return null;
+  }
+  return entry;
+}
+
 app.post('/api/login', async (req, res) => {
   try {
     if (!grist.isConfigured()) {
@@ -95,14 +119,20 @@ app.post('/api/signup', async (req, res) => {
     if (!grist.isConfigured()) {
       return res.status(503).json({ ok: false, error: 'Comptes non configurés côté serveur (Grist manquant).' });
     }
-    const { username, password, displayName } = req.body || {};
+    const { username, email, password, displayName } = req.body || {};
     const cleanUsername = (username || '').trim();
+    const cleanEmail = (email || '').trim();
     const cleanDisplayName = (displayName || '').trim();
     if (!cleanUsername || !password) {
       return res.status(400).json({ ok: false, error: 'Identifiant et mot de passe requis.' });
     }
     if (cleanUsername.length < 3) {
       return res.status(400).json({ ok: false, error: 'L\'identifiant doit comporter au moins 3 caractères.' });
+    }
+    // Email requis dès l'inscription : c'est ce qui permettra plus tard de
+    // réinitialiser le mot de passe en cas d'oubli.
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+      return res.status(400).json({ ok: false, error: 'Une adresse email valide est requise.' });
     }
     if (password.length < 6) {
       return res.status(400).json({ ok: false, error: 'Le mot de passe doit comporter au moins 6 caractères.' });
@@ -112,7 +142,7 @@ app.post('/api/signup', async (req, res) => {
       return res.status(409).json({ ok: false, error: 'Cet identifiant est déjà utilisé.' });
     }
     const passwordHash = await bcrypt.hash(password, 10);
-    await grist.createHost({ username: cleanUsername, passwordHash, displayName: cleanDisplayName });
+    await grist.createHost({ username: cleanUsername, email: cleanEmail, passwordHash, displayName: cleanDisplayName });
 
     // Connexion automatique juste après l'inscription, comme après un login classique.
     const finalDisplayName = cleanDisplayName || cleanUsername;
@@ -124,6 +154,64 @@ app.post('/api/signup', async (req, res) => {
     res.json({ ok: true, token, displayName: finalDisplayName });
   } catch (err) {
     console.error('Erreur /api/signup :', err.message);
+    res.status(500).json({ ok: false, error: 'Erreur serveur, réessaie dans un instant.' });
+  }
+});
+
+// Demande de réinitialisation de mot de passe : envoie un email avec un lien
+// à durée limitée (1h) vers reset-password.html. Répond toujours "ok" (même
+// si l'email est inconnu) pour ne pas révéler quels emails ont un compte.
+app.post('/api/forgot-password', async (req, res) => {
+  try {
+    if (!grist.isConfigured() || !resendClient.isConfigured()) {
+      return res.status(503).json({ ok: false, error: 'Réinitialisation non configurée côté serveur.' });
+    }
+    const { email } = req.body || {};
+    const cleanEmail = (email || '').trim();
+    if (!cleanEmail) {
+      return res.status(400).json({ ok: false, error: 'Adresse email requise.' });
+    }
+    const host = await grist.findHostByEmail(cleanEmail);
+    if (host) {
+      const token = createResetToken({ hostRowId: host.id, username: host.username });
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const resetUrl = `${baseUrl}/reset-password.html?token=${token}`;
+      try {
+        await resendClient.sendPasswordResetEmail({ to: host.email, resetUrl });
+      } catch (sendErr) {
+        console.error('Erreur envoi email de réinitialisation :', sendErr.message);
+      }
+    }
+    res.json({ ok: true, message: 'Si un compte existe avec cet email, un lien de réinitialisation vient de lui être envoyé.' });
+  } catch (err) {
+    console.error('Erreur /api/forgot-password :', err.message);
+    res.status(500).json({ ok: false, error: 'Erreur serveur, réessaie dans un instant.' });
+  }
+});
+
+// Valide le token reçu par email et enregistre le nouveau mot de passe.
+app.post('/api/reset-password', async (req, res) => {
+  try {
+    if (!grist.isConfigured()) {
+      return res.status(503).json({ ok: false, error: 'Comptes non configurés côté serveur (Grist manquant).' });
+    }
+    const { token, password } = req.body || {};
+    if (!token || !password) {
+      return res.status(400).json({ ok: false, error: 'Lien invalide ou mot de passe manquant.' });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ ok: false, error: 'Le mot de passe doit comporter au moins 6 caractères.' });
+    }
+    const entry = getResetToken(token);
+    if (!entry) {
+      return res.status(400).json({ ok: false, error: 'Ce lien de réinitialisation est invalide ou expiré. Merci de refaire une demande.' });
+    }
+    const passwordHash = await bcrypt.hash(password, 10);
+    await grist.updateHostPassword(entry.hostRowId, passwordHash);
+    delete resetTokens[token];
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Erreur /api/reset-password :', err.message);
     res.status(500).json({ ok: false, error: 'Erreur serveur, réessaie dans un instant.' });
   }
 });

@@ -26,12 +26,15 @@
       <input id="loginPassword" type="password" placeholder="••••••••" class="input-lg" autocomplete="current-password" />
       <button id="loginBtn" class="btn-primary btn-lg btn-block">Se connecter</button>
       <p id="loginError" class="error-text"></p>
+      <button id="showForgotBtn" class="link-btn">Mot de passe oublié ?</button>
       <button id="showSignupBtn" class="link-btn">Pas encore de compte ? Créer un compte</button>
     </div>
 
     <div id="signupForm" style="display:none;">
       <p class="eyebrow">Identifiant</p>
       <input id="signupUsername" placeholder="ex : cedric" class="input-lg" autocomplete="username" />
+      <p class="eyebrow">Email</p>
+      <input id="signupEmail" type="email" placeholder="ex : cedric@exemple.fr" class="input-lg" autocomplete="email" />
       <p class="eyebrow">Nom affiché (optionnel)</p>
       <input id="signupDisplayName" placeholder="ex : Cédric" class="input-lg" autocomplete="name" />
       <p class="eyebrow">Mot de passe</p>
@@ -40,8 +43,17 @@
       <input id="signupPasswordConfirm" type="password" placeholder="••••••••" class="input-lg" autocomplete="new-password" />
       <button id="signupBtn" class="btn-primary btn-lg btn-block">Créer mon compte</button>
       <p id="signupError" class="error-text"></p>
-      <p class="hint" style="margin-top:8px;">Ton compte donne accès au répertoire offert ; d'autres répertoires pourront t'être attribués ensuite.</p>
+      <p class="hint" style="margin-top:8px;">Ton compte donne accès au répertoire offert ; d'autres répertoires pourront t'être attribués ensuite. L'email sert uniquement à réinitialiser ton mot de passe en cas d'oubli.</p>
       <button id="showLoginBtn" class="link-btn">J'ai déjà un compte, me connecter</button>
+    </div>
+
+    <div id="forgotForm" style="display:none;">
+      <p class="eyebrow">Email du compte</p>
+      <input id="forgotEmail" type="email" placeholder="ex : cedric@exemple.fr" class="input-lg" autocomplete="email" />
+      <button id="forgotBtn" class="btn-primary btn-lg btn-block">Envoyer le lien de réinitialisation</button>
+      <p id="forgotError" class="error-text"></p>
+      <p id="forgotSuccess" class="hint" style="margin-top:8px; display:none;"></p>
+      <button id="backToLoginFromForgotBtn" class="link-btn">Retour à la connexion</button>
     </div>
 
     <div class="divider-or"><span>ou</span></div>
@@ -357,6 +369,7 @@
     document.getElementById('roomCodeTag').style.display = 'none';
     document.getElementById('loginZone').style.display = 'block';
     document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('forgotForm').style.display = 'none';
     document.getElementById('loginForm').style.display = 'block';
     document.getElementById('loginPassword').value = '';
   };
@@ -374,13 +387,18 @@
 
   document.getElementById('signupBtn').onclick = async () => {
     const username = document.getElementById('signupUsername').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
     const displayNameInput = document.getElementById('signupDisplayName').value.trim();
     const password = document.getElementById('signupPassword').value;
     const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
     const errorEl = document.getElementById('signupError');
     errorEl.textContent = '';
-    if (!username || !password) {
-      errorEl.textContent = 'Identifiant et mot de passe requis.';
+    if (!username || !email || !password) {
+      errorEl.textContent = 'Identifiant, email et mot de passe requis.';
+      return;
+    }
+    if (!email.includes('@')) {
+      errorEl.textContent = 'Adresse email invalide.';
       return;
     }
     if (password.length < 6) {
@@ -395,7 +413,7 @@
       const res = await fetch('/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, displayName: displayNameInput }),
+        body: JSON.stringify({ username, email, password, displayName: displayNameInput }),
       });
       const data = await res.json();
       if (!data.ok) {
@@ -407,6 +425,45 @@
       sessionStorage.setItem('bt_authToken', authToken);
       sessionStorage.setItem('bt_authDisplayName', authDisplayName);
       showLoggedIn();
+    } catch (err) {
+      errorEl.textContent = 'Erreur réseau, réessaie.';
+    }
+  };
+
+  // --- Mot de passe oublié ---
+  document.getElementById('showForgotBtn').onclick = () => {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('forgotForm').style.display = 'block';
+  };
+
+  document.getElementById('backToLoginFromForgotBtn').onclick = () => {
+    document.getElementById('forgotForm').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'block';
+  };
+
+  document.getElementById('forgotBtn').onclick = async () => {
+    const email = document.getElementById('forgotEmail').value.trim();
+    const errorEl = document.getElementById('forgotError');
+    const successEl = document.getElementById('forgotSuccess');
+    errorEl.textContent = '';
+    successEl.style.display = 'none';
+    if (!email || !email.includes('@')) {
+      errorEl.textContent = 'Adresse email invalide.';
+      return;
+    }
+    try {
+      const res = await fetch('/api/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        errorEl.textContent = data.error || 'Envoi impossible.';
+        return;
+      }
+      successEl.textContent = data.message || 'Si un compte existe avec cet email, un lien de réinitialisation vient de lui être envoyé.';
+      successEl.style.display = 'block';
     } catch (err) {
       errorEl.textContent = 'Erreur réseau, réessaie.';
     }

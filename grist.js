@@ -12,6 +12,7 @@
 // Schéma attendu dans le document Grist :
 //   Table "Hosts"
 //     - Username       (Texte)
+//     - Email          (Texte)   utilisé pour la procédure "mot de passe oublié"
 //     - PasswordHash   (Texte)   hash bcrypt, jamais le mot de passe en clair
 //     - DisplayName    (Texte)
 //     - Active         (Bascule / Booléen)
@@ -67,6 +68,27 @@ async function gristPost(path, body) {
   return res.json();
 }
 
+async function gristPatch(path, body) {
+  if (!isConfigured()) {
+    throw new Error(
+      'Grist non configuré : définis GRIST_DOC_ID et GRIST_API_KEY dans les variables d\'environnement.'
+    );
+  }
+  const res = await fetch(`${GRIST_API_BASE}/docs/${GRIST_DOC_ID}${path}`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${GRIST_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const errBody = await res.text().catch(() => '');
+    throw new Error(`Erreur Grist (${res.status}) sur ${path} : ${errBody}`);
+  }
+  return res.json();
+}
+
 // Les colonnes "Référence liste" peuvent revenir sous deux formes selon les
 // versions de l'API Grist : soit un tableau brut d'ids [2, 5], soit une valeur
 // "taguée" ['L', 2, 5] (encodage interne Grist pour les listes). On normalise.
@@ -88,10 +110,37 @@ async function findHostByUsername(username) {
   return {
     id: match.id,
     username: match.fields.Username,
+    email: match.fields.Email || '',
     passwordHash: match.fields.PasswordHash || '',
     displayName: match.fields.DisplayName || match.fields.Username,
     repertoireRowIds: normalizeRefList(match.fields.Repertoires),
   };
+}
+
+// Cherche un compte par email (insensible à la casse). Retourne null si
+// introuvable, inactif, ou si aucun email n'est enregistré pour ce compte.
+async function findHostByEmail(email) {
+  const data = await gristFetch(`/tables/${HOSTS_TABLE}/records`);
+  const records = data.records || [];
+  const needle = (email || '').trim().toLowerCase();
+  if (!needle) return null;
+  const match = records.find((r) => (r.fields.Email || '').trim().toLowerCase() === needle);
+  if (!match) return null;
+  if (match.fields.Active === false) return null;
+  return {
+    id: match.id,
+    username: match.fields.Username,
+    email: match.fields.Email || '',
+    displayName: match.fields.DisplayName || match.fields.Username,
+  };
+}
+
+// Met à jour le hash du mot de passe d'un compte existant (utilisé par la
+// procédure "mot de passe oublié").
+async function updateHostPassword(hostRowId, passwordHash) {
+  await gristPatch(`/tables/${HOSTS_TABLE}/records`, {
+    records: [{ id: hostRowId, fields: { PasswordHash: passwordHash } }],
+  });
 }
 
 // Résout les ids de thèmes (data/songs.json) auxquels un compte a droit, à
@@ -113,12 +162,13 @@ async function getThemeIdsForRepertoireRows(rowIds) {
 // l'administrateur pourra ensuite attribuer des répertoires supplémentaires
 // à ce compte directement dans Grist (ou, plus tard, via un système de
 // crédits).
-async function createHost({ username, passwordHash, displayName }) {
+async function createHost({ username, email, passwordHash, displayName }) {
   const result = await gristPost(`/tables/${HOSTS_TABLE}/records`, {
     records: [
       {
         fields: {
           Username: username,
+          Email: email || '',
           PasswordHash: passwordHash,
           DisplayName: displayName || username,
           Active: true,
@@ -132,6 +182,8 @@ async function createHost({ username, passwordHash, displayName }) {
 module.exports = {
   isConfigured,
   findHostByUsername,
+  findHostByEmail,
+  updateHostPassword,
   getThemeIdsForRepertoireRows,
   createHost,
 };
