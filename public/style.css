@@ -549,7 +549,7 @@ input[type="range"] {
 
 .reveal-card {
   text-align: center;
-  padding: 8px 0 18px;
+  padding: 8px 0 4px;
 }
 
 .reveal-card h2 {
@@ -561,7 +561,11 @@ input[type="range"] {
 .reveal-artist {
   color: var(--text-muted);
   font-size: 1.1rem;
-  margin: 0 0 6px;
+  margin: 0;
+}
+
+#youtube-player {
+  margin-top: 6px;
 }
 
 .notice-banner {
@@ -733,6 +737,19 @@ input[type="range"] {
   border: 1px solid transparent;
 }
 
+.host-page .scoreboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.host-page .scoreboard-item {
+  padding: 7px 10px;
+}
+
 .scoreboard-item.is-leader {
   background: rgba(251, 191, 36, 0.1);
   border-color: rgba(251, 191, 36, 0.3);
@@ -760,7 +777,6 @@ input[type="range"] {
 }
 
 /* ---------- Misc ---------- */
-#youtube-player { margin-top: 16px; }
 
 .hint {
   color: var(--text-muted);
