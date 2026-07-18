@@ -7,7 +7,7 @@
 //                      (ex: "Quizz <no-reply@tondomaine.fr>")
 //
 // Sans domaine vérifié dans Resend, l'envoi ne fonctionne que vers l'adresse
-// email du propriétaire du compte Resend (limite du mode "test" de Resend).
+// email du propriétaire du compte Resend (limite du mode "test" de Resend ).
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL;
