@@ -19,12 +19,30 @@
   </header>
 
   <div id="loginZone" class="card card-center">
-    <p class="eyebrow">Identifiant</p>
-    <input id="loginUsername" placeholder="ex : cedric" class="input-lg" autocomplete="username" />
-    <p class="eyebrow">Mot de passe</p>
-    <input id="loginPassword" type="password" placeholder="••••••••" class="input-lg" autocomplete="current-password" />
-    <button id="loginBtn" class="btn-primary btn-lg btn-block">Se connecter</button>
-    <p id="loginError" class="error-text"></p>
+    <div id="loginForm">
+      <p class="eyebrow">Identifiant</p>
+      <input id="loginUsername" placeholder="ex : cedric" class="input-lg" autocomplete="username" />
+      <p class="eyebrow">Mot de passe</p>
+      <input id="loginPassword" type="password" placeholder="••••••••" class="input-lg" autocomplete="current-password" />
+      <button id="loginBtn" class="btn-primary btn-lg btn-block">Se connecter</button>
+      <p id="loginError" class="error-text"></p>
+      <button id="showSignupBtn" class="link-btn">Pas encore de compte ? Créer un compte</button>
+    </div>
+
+    <div id="signupForm" style="display:none;">
+      <p class="eyebrow">Identifiant</p>
+      <input id="signupUsername" placeholder="ex : cedric" class="input-lg" autocomplete="username" />
+      <p class="eyebrow">Nom affiché (optionnel)</p>
+      <input id="signupDisplayName" placeholder="ex : Cédric" class="input-lg" autocomplete="name" />
+      <p class="eyebrow">Mot de passe</p>
+      <input id="signupPassword" type="password" placeholder="6 caractères minimum" class="input-lg" autocomplete="new-password" />
+      <p class="eyebrow">Confirmation du mot de passe</p>
+      <input id="signupPasswordConfirm" type="password" placeholder="••••••••" class="input-lg" autocomplete="new-password" />
+      <button id="signupBtn" class="btn-primary btn-lg btn-block">Créer mon compte</button>
+      <p id="signupError" class="error-text"></p>
+      <p class="hint" style="margin-top:8px;">Ton compte donne accès au répertoire offert ; d'autres répertoires pourront t'être attribués ensuite.</p>
+      <button id="showLoginBtn" class="link-btn">J'ai déjà un compte, me connecter</button>
+    </div>
 
     <div class="divider-or"><span>ou</span></div>
 
@@ -327,7 +345,60 @@
     document.getElementById('lobby').style.display = 'none';
     document.getElementById('roomCodeTag').style.display = 'none';
     document.getElementById('loginZone').style.display = 'block';
+    document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'block';
     document.getElementById('loginPassword').value = '';
+  };
+
+  // --- Création de compte (self-service) ---
+  document.getElementById('showSignupBtn').onclick = () => {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('signupForm').style.display = 'block';
+  };
+
+  document.getElementById('showLoginBtn').onclick = () => {
+    document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'block';
+  };
+
+  document.getElementById('signupBtn').onclick = async () => {
+    const username = document.getElementById('signupUsername').value.trim();
+    const displayNameInput = document.getElementById('signupDisplayName').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
+    const errorEl = document.getElementById('signupError');
+    errorEl.textContent = '';
+    if (!username || !password) {
+      errorEl.textContent = 'Identifiant et mot de passe requis.';
+      return;
+    }
+    if (password.length < 6) {
+      errorEl.textContent = 'Le mot de passe doit comporter au moins 6 caractères.';
+      return;
+    }
+    if (password !== passwordConfirm) {
+      errorEl.textContent = 'Les mots de passe ne correspondent pas.';
+      return;
+    }
+    try {
+      const res = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, displayName: displayNameInput }),
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        errorEl.textContent = data.error || 'Création de compte impossible.';
+        return;
+      }
+      authToken = data.token;
+      authDisplayName = data.displayName || username;
+      sessionStorage.setItem('bt_authToken', authToken);
+      sessionStorage.setItem('bt_authDisplayName', authDisplayName);
+      showLoggedIn();
+    } catch (err) {
+      errorEl.textContent = 'Erreur réseau, réessaie.';
+    }
   };
 
   // Depuis l'écran d'accueil connecté (répertoire offert), accède au

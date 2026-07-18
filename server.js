@@ -46,6 +46,12 @@ function getSession(token) {
   return session;
 }
 
+// Ids des thématiques marquées "offertes" (accessibles à tout compte, sans
+// attribution manuelle dans Grist) — voir data/songs.json (`free: true`).
+function getFreeThemeIds() {
+  return songData.themes.filter((t) => t.free).map((t) => t.id);
+}
+
 app.post('/api/login', async (req, res) => {
   try {
     if (!grist.isConfigured()) {
@@ -63,7 +69,10 @@ app.post('/api/login', async (req, res) => {
     if (!validPassword) {
       return res.status(401).json({ ok: false, error: 'Identifiant ou mot de passe incorrect.' });
     }
-    const allowedThemeIds = await grist.getThemeIdsForRepertoireRows(host.repertoireRowIds);
+    const assignedThemeIds = await grist.getThemeIdsForRepertoireRows(host.repertoireRowIds);
+    // Tout compte a accès au(x) répertoire(s) offert(s), en plus des
+    // répertoires qui lui ont été attribués manuellement dans Grist.
+    const allowedThemeIds = [...new Set([...getFreeThemeIds(), ...assignedThemeIds])];
     const token = createSession({
       username: host.username,
       displayName: host.displayName,
@@ -72,6 +81,49 @@ app.post('/api/login', async (req, res) => {
     res.json({ ok: true, token, displayName: host.displayName, repertoireCount: allowedThemeIds.length });
   } catch (err) {
     console.error('Erreur /api/login :', err.message);
+    res.status(500).json({ ok: false, error: 'Erreur serveur, réessaie dans un instant.' });
+  }
+});
+
+// Création de compte en self-service, depuis l'écran de connexion de
+// host.html. N'importe qui peut créer un compte ; il n'a au départ accès
+// qu'au(x) répertoire(s) offert(s), en attendant que l'administrateur lui
+// attribue d'autres répertoires dans Grist (ou, plus tard, via un système de
+// crédits).
+app.post('/api/signup', async (req, res) => {
+  try {
+    if (!grist.isConfigured()) {
+      return res.status(503).json({ ok: false, error: 'Comptes non configurés côté serveur (Grist manquant).' });
+    }
+    const { username, password, displayName } = req.body || {};
+    const cleanUsername = (username || '').trim();
+    const cleanDisplayName = (displayName || '').trim();
+    if (!cleanUsername || !password) {
+      return res.status(400).json({ ok: false, error: 'Identifiant et mot de passe requis.' });
+    }
+    if (cleanUsername.length < 3) {
+      return res.status(400).json({ ok: false, error: 'L\'identifiant doit comporter au moins 3 caractères.' });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ ok: false, error: 'Le mot de passe doit comporter au moins 6 caractères.' });
+    }
+    const existing = await grist.findHostByUsername(cleanUsername);
+    if (existing) {
+      return res.status(409).json({ ok: false, error: 'Cet identifiant est déjà utilisé.' });
+    }
+    const passwordHash = await bcrypt.hash(password, 10);
+    await grist.createHost({ username: cleanUsername, passwordHash, displayName: cleanDisplayName });
+
+    // Connexion automatique juste après l'inscription, comme après un login classique.
+    const finalDisplayName = cleanDisplayName || cleanUsername;
+    const token = createSession({
+      username: cleanUsername,
+      displayName: finalDisplayName,
+      allowedThemeIds: getFreeThemeIds(),
+    });
+    res.json({ ok: true, token, displayName: finalDisplayName });
+  } catch (err) {
+    console.error('Erreur /api/signup :', err.message);
     res.status(500).json({ ok: false, error: 'Erreur serveur, réessaie dans un instant.' });
   }
 });
@@ -159,7 +211,7 @@ io.on('connection', (socket) => {
       // Accès sans compte : n'importe quel maître du jeu peut jouer directement
       // avec le(s) répertoire(s) marqué(s) "offert" (`free: true`) dans data/songs.json,
       // sans passer par la mire de connexion.
-      allowedThemeIds = songData.themes.filter((t) => t.free).map((t) => t.id);
+      allowedThemeIds = getFreeThemeIds();
     }
 
     // Le compte (ou l'accès libre) n'a peut-être aucun répertoire attribué :

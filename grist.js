@@ -46,6 +46,27 @@ async function gristFetch(path) {
   return res.json();
 }
 
+async function gristPost(path, body) {
+  if (!isConfigured()) {
+    throw new Error(
+      'Grist non configuré : définis GRIST_DOC_ID et GRIST_API_KEY dans les variables d\'environnement.'
+    );
+  }
+  const res = await fetch(`${GRIST_API_BASE}/docs/${GRIST_DOC_ID}${path}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${GRIST_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const errBody = await res.text().catch(() => '');
+    throw new Error(`Erreur Grist (${res.status}) sur ${path} : ${errBody}`);
+  }
+  return res.json();
+}
+
 // Les colonnes "Référence liste" peuvent revenir sous deux formes selon les
 // versions de l'API Grist : soit un tableau brut d'ids [2, 5], soit une valeur
 // "taguée" ['L', 2, 5] (encodage interne Grist pour les listes). On normalise.
@@ -86,8 +107,31 @@ async function getThemeIdsForRepertoireRows(rowIds) {
     .filter(Boolean);
 }
 
+// Crée un nouveau compte maître du jeu (self-service, depuis host.html).
+// Actif par défaut, sans répertoire attribué au départ — l'accès au(x)
+// répertoire(s) "offert(s)" est géré côté serveur (data/songs.json), et
+// l'administrateur pourra ensuite attribuer des répertoires supplémentaires
+// à ce compte directement dans Grist (ou, plus tard, via un système de
+// crédits).
+async function createHost({ username, passwordHash, displayName }) {
+  const result = await gristPost(`/tables/${HOSTS_TABLE}/records`, {
+    records: [
+      {
+        fields: {
+          Username: username,
+          PasswordHash: passwordHash,
+          DisplayName: displayName || username,
+          Active: true,
+        },
+      },
+    ],
+  });
+  return result.records[0].id;
+}
+
 module.exports = {
   isConfigured,
   findHostByUsername,
   getThemeIdsForRepertoireRows,
+  createHost,
 };

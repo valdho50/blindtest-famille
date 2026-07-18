@@ -361,6 +361,114 @@ button:disabled {
   background: var(--surface-border);
 }
 
+.link-btn {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+  padding: 4px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.link-btn:hover {
+  opacity: 0.85;
+}
+
+/* ---------- Page d'accueil (index.html) ---------- */
+.landing-page .container {
+  padding-top: 56px;
+  text-align: center;
+}
+
+.landing-tagline {
+  color: var(--text-muted);
+  font-size: 1.02rem;
+  line-height: 1.55;
+  max-width: 440px;
+  margin: 0 auto 34px;
+}
+
+.landing-choice-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+@media (min-width: 560px) {
+  .landing-choice-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.landing-choice-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 28px 20px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--shadow-soft);
+  text-decoration: none;
+  color: var(--text);
+  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.landing-choice-card:hover {
+  transform: translateY(-2px);
+  background: var(--surface-strong);
+}
+
+.landing-choice-host {
+  border-color: rgba(251, 191, 36, 0.4);
+}
+
+.landing-choice-player {
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+.landing-choice-icon {
+  font-size: 2rem;
+}
+
+.landing-choice-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.landing-footnote {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding-top: 20px;
+  border-top: 1px solid var(--surface-border);
+}
+
+.landing-footnote-badge {
+  display: inline-flex;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.landing-footnote .hint {
+  max-width: 400px;
+}
+
 .btn-primary {
   background: linear-gradient(135deg, var(--accent), var(--accent-strong));
   color: var(--accent-contrast);
