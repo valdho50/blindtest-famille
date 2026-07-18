@@ -6,7 +6,7 @@
 <title>Blind Test — Écran du maître du jeu</title>
 <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body class="host-page">
 <div class="container">
   <header class="app-header">
     <div class="brand-banner">
@@ -33,54 +33,56 @@
       <div id="playerList" class="player-list">Aucun joueur pour l'instant.</div>
     </div>
 
-    <div class="section">
-      <h3><span class="section-icon">✏️</span> Mode de réponse</h3>
-      <div id="answerModeGrid" class="option-grid">
-        <button id="modeLibreBtn" class="option-card">
-          <span class="option-title">Libre</span>
-          <span class="hint">Les joueurs tapent leur réponse</span>
-        </button>
-        <button id="modeQcmBtn" class="option-card">
-          <span class="option-title">QCM</span>
-          <span class="hint">4 propositions au choix</span>
-        </button>
-        <button id="modeMixteBtn" class="option-card">
-          <span class="option-title">Mixte</span>
-          <span class="hint">Un mélange des deux</span>
-        </button>
+    <div class="section config-grid">
+      <div class="config-col">
+        <h3><span class="section-icon">✏️</span> Mode de réponse</h3>
+        <div id="answerModeGrid" class="option-grid">
+          <button id="modeLibreBtn" class="option-card">
+            <span class="option-title">Libre</span>
+            <span class="hint">Les joueurs tapent leur réponse</span>
+          </button>
+          <button id="modeQcmBtn" class="option-card">
+            <span class="option-title">QCM</span>
+            <span class="hint">4 propositions au choix</span>
+          </button>
+          <button id="modeMixteBtn" class="option-card">
+            <span class="option-title">Mixte</span>
+            <span class="hint">Un mélange des deux</span>
+          </button>
+        </div>
+        <div id="mixteRatioZone" style="display:none; margin-top:14px;">
+          <label for="mixteRatio" class="slider-label">Proportion de questions en QCM : <strong id="mixteRatioValue">50%</strong></label>
+          <input type="range" id="mixteRatio" min="0" max="100" step="10" value="50" />
+        </div>
+        <p class="status-line" id="currentModeLabel">Mode actuel : Libre</p>
       </div>
-      <div id="mixteRatioZone" style="display:none; margin-top:14px;">
-        <label for="mixteRatio" class="slider-label">Proportion de questions en QCM : <strong id="mixteRatioValue">50%</strong></label>
-        <input type="range" id="mixteRatio" min="0" max="100" step="10" value="50" />
-      </div>
-      <p class="status-line" id="currentModeLabel">Mode actuel : Libre</p>
-    </div>
 
-    <div class="section">
-      <h3><span class="section-icon">⏱️</span> Minuteur</h3>
-      <div id="timerGrid" class="option-grid option-grid-4">
-        <button class="option-card timerBtn" data-duration="0"><span class="option-title">Aucun</span></button>
-        <button class="option-card timerBtn" data-duration="15"><span class="option-title">15 s</span></button>
-        <button class="option-card timerBtn" data-duration="30"><span class="option-title">30 s</span></button>
-        <button class="option-card timerBtn" data-duration="60"><span class="option-title">60 s</span></button>
+      <div class="config-col">
+        <h3><span class="section-icon">⏱️</span> Minuteur</h3>
+        <div id="timerGrid" class="option-grid option-grid-2">
+          <button class="option-card timerBtn" data-duration="0"><span class="option-title">Aucun</span></button>
+          <button class="option-card timerBtn" data-duration="15"><span class="option-title">15 s</span></button>
+          <button class="option-card timerBtn" data-duration="30"><span class="option-title">30 s</span></button>
+          <button class="option-card timerBtn" data-duration="60"><span class="option-title">60 s</span></button>
+        </div>
+        <p class="status-line" id="currentTimerLabel">Minuteur actuel : 30 s</p>
       </div>
-      <p class="status-line" id="currentTimerLabel">Minuteur actuel : 30 s</p>
-    </div>
 
-    <div class="section">
-      <h3><span class="section-icon">🔢</span> Nombre de questions</h3>
-      <div id="questionCountGrid" class="option-grid option-grid-4">
-        <button class="option-card questionCountBtn" data-count="5"><span class="option-title">5</span></button>
-        <button class="option-card questionCountBtn" data-count="10"><span class="option-title">10</span></button>
-        <button class="option-card questionCountBtn" data-count="15"><span class="option-title">15</span></button>
-        <button class="option-card questionCountBtn" data-count="20"><span class="option-title">20</span></button>
+      <div class="config-col">
+        <h3><span class="section-icon">🔢</span> Nombre de questions</h3>
+        <div id="questionCountGrid" class="option-grid option-grid-2">
+          <button class="option-card questionCountBtn" data-count="5"><span class="option-title">5</span></button>
+          <button class="option-card questionCountBtn" data-count="10"><span class="option-title">10</span></button>
+          <button class="option-card questionCountBtn" data-count="15"><span class="option-title">15</span></button>
+          <button class="option-card questionCountBtn" data-count="20"><span class="option-title">20</span></button>
+        </div>
+        <p class="status-line" id="currentQuestionCountLabel">Nombre de questions : 10</p>
       </div>
-      <p class="status-line" id="currentQuestionCountLabel">Nombre de questions : 10</p>
     </div>
 
     <div class="section">
       <h3><span class="section-icon">🎨</span> Choisir une thématique</h3>
-      <div id="themeGrid" class="option-grid"></div>
+      <div id="themeGrid" class="option-grid option-grid-compact"></div>
     </div>
   </div>
 
@@ -163,7 +165,6 @@
       document.getElementById('roomCode').textContent = roomCode;
       document.getElementById('setup').style.display = 'none';
       document.getElementById('lobby').style.display = 'block';
-      document.getElementById('scoreboardCard').style.display = 'block';
       const grid = document.getElementById('themeGrid');
       grid.innerHTML = '';
       res.themes.forEach((t) => {
@@ -282,6 +283,7 @@
     selectedTheme = label;
     document.getElementById('lobby').style.display = 'none';
     document.getElementById('game').style.display = 'block';
+    document.getElementById('scoreboardCard').style.display = 'block';
     document.getElementById('currentTheme').textContent = label;
   });
 

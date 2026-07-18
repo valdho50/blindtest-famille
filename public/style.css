@@ -47,6 +47,119 @@ body {
   max-width: 560px;
 }
 
+/* ---------- Écran maître du jeu : optimisé écran 13" (≈1280–1440px) ---------- */
+.host-page .container {
+  max-width: 1180px;
+  padding: 20px 24px 36px;
+}
+
+.host-page .app-header {
+  margin-bottom: 18px;
+}
+
+.host-page .brand-banner {
+  padding: 12px 28px;
+}
+
+.host-page .brand-line2 {
+  font-size: 1.5rem;
+}
+
+.host-page .card {
+  padding: 20px 24px;
+  margin-bottom: 14px;
+}
+
+.host-page .section {
+  margin-top: 18px;
+  padding-top: 16px;
+}
+
+.host-page .section:first-of-type {
+  margin-top: 14px;
+}
+
+.host-page h3 {
+  font-size: 0.98rem;
+  margin-bottom: 10px;
+}
+
+.host-page .option-card {
+  padding: 12px 10px;
+  min-height: 52px;
+}
+
+.host-page .option-title {
+  font-size: 0.95rem;
+}
+
+.host-page .phrase {
+  padding: 18px 16px;
+  font-size: 1.3rem;
+  margin-bottom: 12px;
+}
+
+.host-page .answer-hint-box {
+  padding: 10px 14px;
+  margin: 12px 0 16px;
+}
+
+.host-page .player-status-grid {
+  margin-bottom: 14px;
+}
+
+.host-page .game-status-bar {
+  margin-bottom: 14px;
+}
+
+.config-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.config-col + .config-col {
+  padding-top: 18px;
+  border-top: 1px solid var(--surface-border);
+}
+
+.option-grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.option-grid-compact {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+@media (min-width: 900px) {
+  .config-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .config-col + .config-col {
+    padding-top: 0;
+    border-top: none;
+    padding-left: 24px;
+    border-left: 1px solid var(--surface-border);
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 900px) {
+  .host-page .container {
+    padding-top: 16px;
+  }
+
+  .host-page .card {
+    padding: 16px 22px;
+  }
+
+  .host-page .section {
+    margin-top: 14px;
+    padding-top: 12px;
+  }
+}
+
 /* ---------- Header ---------- */
 .app-header {
   display: flex;
@@ -940,4 +1053,21 @@ body.player-page {
   .option-grid-4 { grid-template-columns: repeat(2, 1fr); }
   .code { font-size: 2.4rem; }
   h1 { font-size: 1.4rem; }
+  .host-page .config-col + .config-col { padding-top: 14px; }
+}
+
+/* ---------- Écran joueur : responsive tablette ---------- */
+@media (min-width: 600px) {
+  .container-narrow {
+    max-width: 640px;
+  }
+}
+
+@media (min-width: 900px) {
+  .container-narrow {
+    max-width: 760px;
+  }
+  .option-grid-stack {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
