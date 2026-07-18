@@ -15,6 +15,7 @@
     </div>
     <p class="app-subtitle">Écran du maître du jeu</p>
     <p class="room-code-tag" id="roomCodeTag" style="display:none;">Partie n° <strong id="roomCodeTagValue">----</strong></p>
+    <button id="logoutBtn" class="logout-discreet" style="display:none;">Se déconnecter</button>
   </header>
 
   <div id="loginZone" class="card card-center">
@@ -27,9 +28,9 @@
   </div>
 
   <div id="setup" class="card card-center" style="display:none;">
-    <p class="hint" id="welcomeHint" style="margin-bottom:18px;">Prêt à lancer une nouvelle partie entre amis ou en famille ?</p>
-    <button id="createBtn" class="btn-primary btn-lg">Créer une nouvelle partie</button>
-    <button id="logoutBtn" class="btn-secondary btn-block" style="margin-top:10px;">Se déconnecter</button>
+    <p class="hint" id="welcomeHint" style="margin-bottom:18px;">Voici le répertoire de chansons offert à ton compte :</p>
+    <div id="offeredRepertoireGrid" class="option-grid option-grid-compact" style="margin-bottom:22px;"></div>
+    <button id="goToSetupBtn" class="btn-primary btn-lg btn-block">Accéder au paramétrage</button>
   </div>
 
   <div id="lobby" class="card" style="display:none;">
@@ -196,10 +197,74 @@
 
   function showLoggedIn() {
     document.getElementById('loginZone').style.display = 'none';
-    document.getElementById('setup').style.display = 'block';
-    document.getElementById('welcomeHint').textContent = authDisplayName
-      ? `Prêt à lancer une nouvelle partie, ${authDisplayName} ?`
-      : 'Prêt à lancer une nouvelle partie entre amis ou en famille ?';
+    document.getElementById('logoutBtn').style.display = 'inline-block';
+    // On saute l'étape "créer une nouvelle partie" : la partie est créée en
+    // arrière-plan dès la connexion, et on affiche directement le répertoire
+    // offert au compte avec un bouton vers le paramétrage complet.
+    createRoomAndShowRepertoire();
+  }
+
+  // Crée la partie (silencieusement) et affiche l'écran d'accueil connecté :
+  // répertoire de chansons offert au compte + bouton vers le paramétrage.
+  function createRoomAndShowRepertoire() {
+    socket.emit('host:create', { token: authToken }, (res) => {
+      if (res.error) {
+        // Session invalide/expirée : on renvoie vers l'écran de connexion.
+        authToken = null;
+        sessionStorage.removeItem('bt_authToken');
+        document.getElementById('logoutBtn').style.display = 'none';
+        document.getElementById('setup').style.display = 'none';
+        document.getElementById('loginZone').style.display = 'block';
+        document.getElementById('loginError').textContent = res.error;
+        return;
+      }
+      roomCode = res.code;
+      document.getElementById('roomCode').textContent = roomCode;
+      document.getElementById('roomCodeTagValue').textContent = roomCode;
+      document.getElementById('roomCodeTag').style.display = 'inline-flex';
+
+      document.getElementById('welcomeHint').textContent = authDisplayName
+        ? `Bienvenue, ${authDisplayName}. Voici le répertoire de chansons offert à ton compte :`
+        : 'Voici le répertoire de chansons offert à ton compte :';
+
+      const offeredGrid = document.getElementById('offeredRepertoireGrid');
+      offeredGrid.innerHTML = '';
+      if (!res.themes.length) {
+        offeredGrid.innerHTML = '<p class="hint">Aucun répertoire n\'est encore attribué à ton compte. Contacte l\'administrateur du jeu.</p>';
+      }
+      res.themes.forEach((t) => {
+        const card = document.createElement('div');
+        card.className = 'option-card';
+        card.innerHTML = `<span class="option-title">${t.label}</span><span class="hint">${t.count} chansons</span>`;
+        offeredGrid.appendChild(card);
+      });
+
+      // Prépare aussi la grille de sélection de thématique de l'écran de
+      // paramétrage (lobby), pour que tout soit prêt quand le maître du jeu
+      // clique sur "Accéder au paramétrage".
+      const themeGrid = document.getElementById('themeGrid');
+      themeGrid.innerHTML = '';
+      res.themes.forEach((t) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-card';
+        btn.innerHTML = `<span class="option-title">${t.label}</span><span class="hint">${t.count} chansons</span>`;
+        btn.onclick = () => {
+          socket.emit('host:selectTheme', { code: roomCode, themeId: t.id });
+        };
+        themeGrid.appendChild(btn);
+      });
+
+      if (res.questionCount) {
+        questionCount = res.questionCount;
+        updateQuestionCountUI();
+      }
+      if (res.videoDiffusion) {
+        videoDiffusion = res.videoDiffusion;
+        updateVideoDiffusionUI();
+      }
+
+      document.getElementById('setup').style.display = 'block';
+    });
   }
 
   if (authToken) showLoggedIn();
@@ -238,51 +303,20 @@
     authToken = null;
     sessionStorage.removeItem('bt_authToken');
     sessionStorage.removeItem('bt_authDisplayName');
+    document.getElementById('logoutBtn').style.display = 'none';
     document.getElementById('setup').style.display = 'none';
+    document.getElementById('lobby').style.display = 'none';
+    document.getElementById('roomCodeTag').style.display = 'none';
     document.getElementById('loginZone').style.display = 'block';
     document.getElementById('loginPassword').value = '';
   };
 
-  document.getElementById('createBtn').onclick = () => {
-    socket.emit('host:create', { token: authToken }, (res) => {
-      if (res.error) {
-        // Session invalide/expirée : on renvoie vers l'écran de connexion.
-        authToken = null;
-        sessionStorage.removeItem('bt_authToken');
-        document.getElementById('setup').style.display = 'none';
-        document.getElementById('loginZone').style.display = 'block';
-        document.getElementById('loginError').textContent = res.error;
-        return;
-      }
-      roomCode = res.code;
-      document.getElementById('roomCode').textContent = roomCode;
-      document.getElementById('roomCodeTagValue').textContent = roomCode;
-      document.getElementById('roomCodeTag').style.display = 'inline-flex';
-      document.getElementById('setup').style.display = 'none';
-      document.getElementById('lobby').style.display = 'block';
-      const grid = document.getElementById('themeGrid');
-      grid.innerHTML = '';
-      if (!res.themes.length) {
-        grid.innerHTML = '<p class="hint">Aucun répertoire n\'est encore attribué à ton compte. Contacte l\'administrateur du jeu.</p>';
-      }
-      res.themes.forEach((t) => {
-        const btn = document.createElement('button');
-        btn.className = 'option-card';
-        btn.innerHTML = `<span class="option-title">${t.label}</span><span class="hint">${t.count} chansons</span>`;
-        btn.onclick = () => {
-          socket.emit('host:selectTheme', { code: roomCode, themeId: t.id });
-        };
-        grid.appendChild(btn);
-      });
-      if (res.questionCount) {
-        questionCount = res.questionCount;
-        updateQuestionCountUI();
-      }
-      if (res.videoDiffusion) {
-        videoDiffusion = res.videoDiffusion;
-        updateVideoDiffusionUI();
-      }
-    });
+  // Depuis l'écran d'accueil connecté (répertoire offert), accède au
+  // paramétrage complet de la partie (joueurs, mode de réponse, minuteur,
+  // nombre de questions, diffusion vidéo, choix de la thématique).
+  document.getElementById('goToSetupBtn').onclick = () => {
+    document.getElementById('setup').style.display = 'none';
+    document.getElementById('lobby').style.display = 'block';
   };
 
   // --- Mode de réponse (Libre / QCM / Mixte) ---
