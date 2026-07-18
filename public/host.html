@@ -57,9 +57,8 @@
 
   <div id="lobby" class="card" style="display:none;">
     <div class="code-block">
-      <p class="eyebrow">Code de partie</p>
       <div class="code" id="roomCode">----</div>
-      <p class="hint">Les joueurs ouvrent <strong>player.html</strong> sur leur téléphone, saisissent ce code et rejoignent la partie.</p>
+      <p class="hint">Code à communiquer aux joueurs pour rejoindre la partie.</p>
     </div>
 
     <div class="section">
@@ -88,7 +87,6 @@
           <label for="mixteRatio" class="slider-label">Proportion de questions en QCM : <strong id="mixteRatioValue">50%</strong></label>
           <input type="range" id="mixteRatio" min="0" max="100" step="10" value="50" />
         </div>
-        <p class="status-line" id="currentModeLabel">Mode actuel : Libre</p>
       </div>
 
       <div class="config-col">
@@ -99,7 +97,6 @@
           <button class="option-card timerBtn" data-duration="30"><span class="option-title">30 s</span></button>
           <button class="option-card timerBtn" data-duration="60"><span class="option-title">60 s</span></button>
         </div>
-        <p class="status-line" id="currentTimerLabel">Minuteur actuel : 30 s</p>
       </div>
 
       <div class="config-col">
@@ -110,7 +107,6 @@
           <button class="option-card questionCountBtn" data-count="15"><span class="option-title">15</span></button>
           <button class="option-card questionCountBtn" data-count="20"><span class="option-title">20</span></button>
         </div>
-        <p class="status-line" id="currentQuestionCountLabel">Nombre de questions : 10</p>
       </div>
     </div>
 
@@ -130,7 +126,6 @@
           <span class="hint">Diffusé partout</span>
         </button>
       </div>
-      <p class="status-line" id="currentVideoDiffusionLabel">Diffusion actuelle : Maître du jeu</p>
     </div>
 
     <div class="section">
@@ -434,8 +429,6 @@
     document.getElementById('modeQcmBtn').classList.toggle('is-selected', answerMode === 'qcm');
     document.getElementById('modeMixteBtn').classList.toggle('is-selected', answerMode === 'mixte');
     document.getElementById('mixteRatioZone').style.display = answerMode === 'mixte' ? 'block' : 'none';
-    const labels = { libre: 'Libre', qcm: 'QCM', mixte: `Mixte (${qcmRatio}% QCM)` };
-    document.getElementById('currentModeLabel').textContent = `Mode actuel : ${labels[answerMode]}`;
   }
 
   function sendAnswerMode() {
@@ -460,8 +453,6 @@
     document.querySelectorAll('.timerBtn').forEach((btn) => {
       btn.classList.toggle('is-selected', Number(btn.dataset.duration) === timerDuration);
     });
-    document.getElementById('currentTimerLabel').textContent =
-      timerDuration === 0 ? 'Minuteur actuel : Aucun' : `Minuteur actuel : ${timerDuration} s`;
   }
 
   document.querySelectorAll('.timerBtn').forEach((btn) => {
@@ -480,7 +471,6 @@
     document.querySelectorAll('.questionCountBtn').forEach((btn) => {
       btn.classList.toggle('is-selected', Number(btn.dataset.count) === questionCount);
     });
-    document.getElementById('currentQuestionCountLabel').textContent = `Nombre de questions : ${questionCount}`;
   }
 
   document.querySelectorAll('.questionCountBtn').forEach((btn) => {
@@ -494,14 +484,11 @@
 
   // --- Diffusion vidéo à la correction ---
   let videoDiffusion = 'host';
-  const videoDiffusionLabels = { host: 'Maître du jeu', players: 'Joueurs', both: 'Les deux' };
 
   function updateVideoDiffusionUI() {
     document.querySelectorAll('.videoDiffusionBtn').forEach((btn) => {
       btn.classList.toggle('is-selected', btn.dataset.value === videoDiffusion);
     });
-    document.getElementById('currentVideoDiffusionLabel').textContent =
-      `Diffusion actuelle : ${videoDiffusionLabels[videoDiffusion]}`;
   }
 
   document.querySelectorAll('.videoDiffusionBtn').forEach((btn) => {
