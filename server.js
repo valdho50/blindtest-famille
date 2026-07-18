@@ -3,11 +3,15 @@ const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
+const grist = require('./grist');
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
+app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 const songData = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'songs.json'), 'utf-8'));
@@ -18,6 +22,59 @@ const songData = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'songs.
 //   theme, usedSongIds: Set, currentSong, phase, pendingAnswers: {}
 // }
 const rooms = {};
+
+// --- Sessions maître du jeu (comptes Grist) ---
+// sessions[token] = { username, displayName, allowedThemeIds: string[], createdAt }
+// En mémoire comme le reste de l'état : une session ne survit pas à un
+// redémarrage du serveur, ce qui est cohérent avec le reste de l'appli.
+const sessions = {};
+const SESSION_TTL_MS = 6 * 60 * 60 * 1000; // 6h, largement suffisant pour une soirée de jeu
+
+function createSession({ username, displayName, allowedThemeIds }) {
+  const token = crypto.randomUUID();
+  sessions[token] = { username, displayName, allowedThemeIds, createdAt: Date.now() };
+  return token;
+}
+
+function getSession(token) {
+  const session = sessions[token];
+  if (!session) return null;
+  if (Date.now() - session.createdAt > SESSION_TTL_MS) {
+    delete sessions[token];
+    return null;
+  }
+  return session;
+}
+
+app.post('/api/login', async (req, res) => {
+  try {
+    if (!grist.isConfigured()) {
+      return res.status(503).json({ ok: false, error: 'Comptes non configurés côté serveur (Grist manquant).' });
+    }
+    const { username, password } = req.body || {};
+    if (!username || !password) {
+      return res.status(400).json({ ok: false, error: 'Identifiant et mot de passe requis.' });
+    }
+    const host = await grist.findHostByUsername(username);
+    if (!host || !host.passwordHash) {
+      return res.status(401).json({ ok: false, error: 'Identifiant ou mot de passe incorrect.' });
+    }
+    const validPassword = await bcrypt.compare(password, host.passwordHash);
+    if (!validPassword) {
+      return res.status(401).json({ ok: false, error: 'Identifiant ou mot de passe incorrect.' });
+    }
+    const allowedThemeIds = await grist.getThemeIdsForRepertoireRows(host.repertoireRowIds);
+    const token = createSession({
+      username: host.username,
+      displayName: host.displayName,
+      allowedThemeIds,
+    });
+    res.json({ ok: true, token, displayName: host.displayName, repertoireCount: allowedThemeIds.length });
+  } catch (err) {
+    console.error('Erreur /api/login :', err.message);
+    res.status(500).json({ ok: false, error: 'Erreur serveur, réessaie dans un instant.' });
+  }
+});
 
 function generateCode() {
   let code;
@@ -84,10 +141,22 @@ function resolveRoundMode(room) {
 
 io.on('connection', (socket) => {
   // --- HOST ---
-  socket.on('host:create', (cb) => {
+  socket.on('host:create', ({ token } = {}, cb) => {
+    const session = getSession(token);
+    if (!session) {
+      cb({ error: 'Session expirée ou invalide, merci de te reconnecter.' });
+      return;
+    }
+    // Le compte n'a peut-être aucun répertoire attribué : dans ce cas il ne
+    // verra aucune thématique proposée (plutôt que tout le catalogue).
+    const allowedThemeIds = new Set(session.allowedThemeIds);
+    const availableThemes = songData.themes.filter((t) => allowedThemeIds.has(t.id));
+
     const code = generateCode();
     rooms[code] = {
       hostSocketId: socket.id,
+      hostUsername: session.username,
+      allowedThemeIds: session.allowedThemeIds,
       players: {},
       theme: null,
       usedSongIds: new Set(),
@@ -107,7 +176,8 @@ io.on('connection', (socket) => {
     socket.data.isHost = true;
     cb({
       code,
-      themes: songData.themes.map((t) => ({
+      displayName: session.displayName,
+      themes: availableThemes.map((t) => ({
         id: t.id,
         label: t.label,
         count: allSongs.filter((s) => s.themes.includes(t.id)).length,
@@ -120,6 +190,9 @@ io.on('connection', (socket) => {
   socket.on('host:selectTheme', ({ code, themeId }) => {
     const room = rooms[code];
     if (!room || room.hostSocketId !== socket.id) return;
+    // Garde-fou : même si le client est trafiqué, on ne peut pas sélectionner
+    // une thématique hors des répertoires attribués au compte.
+    if (!room.allowedThemeIds.includes(themeId)) return;
     room.theme = themeId;
     room.phase = 'theme-selected';
     io.to(code).emit('game:themeSelected', {
