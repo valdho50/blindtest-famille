@@ -14,6 +14,7 @@
       <span class="brand-line2">On connaît la chanson</span>
     </div>
     <p class="app-subtitle">Écran du maître du jeu</p>
+    <p class="room-code-tag" id="roomCodeTag" style="display:none;">Partie n° <strong id="roomCodeTagValue">----</strong></p>
   </header>
 
   <div id="setup" class="card card-center">
@@ -96,6 +97,11 @@
       <div class="phrase" id="phraseText"></div>
       <div id="timerDisplay" class="timer-display" style="display:none;"></div>
 
+      <h3><span class="section-icon">🧑‍🤝‍🧑</span> Statut des joueurs</h3>
+      <div id="playerStatusGrid" class="player-status-grid">En attente de joueurs...</div>
+
+      <button id="revealBtn" class="btn-secondary btn-block">Lancer la correction</button>
+
       <div class="answer-hint-box">
         <div class="answer-hint-top">
           <span class="eyebrow" style="margin:0;">Réponse attendue (visible uniquement par toi)</span>
@@ -106,11 +112,6 @@
         </div>
         <span id="answerHint" class="answer-hint-value answer-hint-hidden">🔒 Réponse masquée</span>
       </div>
-
-      <h3><span class="section-icon">🧑‍🤝‍🧑</span> Statut des joueurs</h3>
-      <div id="playerStatusGrid" class="player-status-grid">En attente de joueurs...</div>
-
-      <button id="revealBtn" class="btn-secondary btn-block">Lancer la correction</button>
     </div>
 
     <div id="revealZone" style="display:none;">
@@ -162,6 +163,8 @@
     socket.emit('host:create', (res) => {
       roomCode = res.code;
       document.getElementById('roomCode').textContent = roomCode;
+      document.getElementById('roomCodeTagValue').textContent = roomCode;
+      document.getElementById('roomCodeTag').style.display = 'inline-flex';
       document.getElementById('setup').style.display = 'none';
       document.getElementById('lobby').style.display = 'block';
       const grid = document.getElementById('themeGrid');

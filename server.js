@@ -199,9 +199,10 @@ io.on('connection', (socket) => {
     });
   });
 
-  socket.on('host:reveal', ({ code }) => {
-    const room = rooms[code];
-    if (!room || room.hostSocketId !== socket.id || !room.currentSong) return;
+  // Bascule vers l'écran de correction (utilisée à la fois pour le déclenchement manuel
+  // par le maître du jeu et pour la bascule automatique quand tous les joueurs ont répondu).
+  function revealRound(room, code) {
+    if (!room || !room.currentSong || room.phase !== 'question') return;
     room.phase = 'reveal';
     const song = room.currentSong;
     // Les réponses détaillées de chaque joueur (y compris ceux qui n'ont rien
@@ -227,10 +228,16 @@ io.on('connection', (socket) => {
       answers,
     });
     // Les joueurs voient seulement le titre/interprète, pas l'extrait audio.
-    socket.to(code).emit('game:revealPlayers', {
+    io.to(code).except(room.hostSocketId).emit('game:revealPlayers', {
       title: song.title,
       artist: song.artist,
     });
+  }
+
+  socket.on('host:reveal', ({ code }) => {
+    const room = rooms[code];
+    if (!room || room.hostSocketId !== socket.id) return;
+    revealRound(room, code);
   });
 
   socket.on('host:validateAnswer', ({ code, playerId, titleCorrect, artistCorrect }) => {
@@ -276,6 +283,14 @@ io.on('connection', (socket) => {
     // encore" (pastille rouge/verte) — pas le contenu des réponses, réservé à
     // l'écran de correction.
     io.to(room.hostSocketId).emit('game:answersStatus', { answeredIds: Object.keys(room.pendingAnswers) });
+
+    // Bascule automatique vers la correction dès que tous les joueurs présents
+    // ont répondu (le maître du jeu garde la main pour lancer manuellement plus tôt).
+    const playerIds = Object.keys(room.players);
+    const answeredCount = Object.keys(room.pendingAnswers).length;
+    if (playerIds.length > 0 && answeredCount >= playerIds.length) {
+      revealRound(room, code);
+    }
   });
 
   socket.on('disconnect', () => {

@@ -101,7 +101,7 @@ body {
 
 .host-page .answer-hint-box {
   padding: 10px 14px;
-  margin: 12px 0 16px;
+  margin: 12px 0 0;
 }
 
 .host-page .player-status-grid {
@@ -212,6 +212,25 @@ h1 {
   color: var(--text-muted);
   font-size: 0.95rem;
   font-weight: 500;
+}
+
+.room-code-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--surface-border);
+  font-size: 0.75rem;
+  color: var(--text-faint);
+}
+
+.room-code-tag strong {
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  font-weight: 700;
 }
 
 /* ---------- Cards ---------- */
@@ -431,7 +450,7 @@ input[type="range"] {
   border: 1px dashed rgba(251, 191, 36, 0.35);
   border-radius: var(--radius-md);
   padding: 14px 16px;
-  margin: 16px 0 22px;
+  margin: 16px 0 0;
 }
 
 .answer-hint-top {
@@ -853,6 +872,32 @@ th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--surface-
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 
+/* Écran maître du jeu : grille sur 2 colonnes pour voir au moins 6 joueurs sans scroll */
+.host-page .answers-zone {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  max-height: 620px;
+}
+
+.host-page .answer-card {
+  padding: 10px 12px;
+}
+
+.host-page .answer-card-head {
+  margin-bottom: 6px;
+}
+
+.host-page .answer-guess-list {
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.host-page .answer-row-controls {
+  padding-top: 8px;
+  gap: 8px;
+}
+
 .answer-card-validated {
   border-color: rgba(52, 211, 153, 0.4);
   background: rgba(52, 211, 153, 0.06);
@@ -1061,6 +1106,10 @@ body.player-page {
     position: static;
   }
   .answers-zone {
+    max-height: none;
+  }
+  .host-page .answers-zone {
+    grid-template-columns: 1fr;
     max-height: none;
   }
 }
