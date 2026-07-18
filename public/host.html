@@ -239,9 +239,34 @@
     createRoomAndShowRepertoire();
   };
 
+  // Construit une carte de répertoire. Un répertoire auquel le compte a droit
+  // (`allowed`) s'affiche nettement et, si `selectable`, peut être choisi pour
+  // lancer la partie. Un répertoire non attribué s'affiche grisé avec une
+  // invite à l'acquérir (pas encore de parcours d'achat : message d'attente
+  // pour le moment).
+  function buildThemeCard(theme, { selectable }) {
+    const btn = document.createElement('button');
+    btn.className = 'option-card' + (theme.allowed ? '' : ' option-card-locked');
+    btn.innerHTML = theme.allowed
+      ? `<span class="option-title">${theme.label}</span><span class="hint">${theme.count} chansons</span>`
+      : `<span class="option-title">${theme.label}</span><span class="hint">${theme.count} chansons</span><span class="lock-badge">🔒 À débloquer</span>`;
+    if (theme.allowed) {
+      if (selectable) {
+        btn.onclick = () => {
+          socket.emit('host:selectTheme', { code: roomCode, themeId: theme.id });
+        };
+      }
+    } else {
+      btn.onclick = () => {
+        alert(`Le répertoire « ${theme.label} » n'est pas encore débloqué sur ton compte. L'acquisition de répertoires supplémentaires arrive bientôt — contacte l'administrateur du jeu en attendant.`);
+      };
+    }
+    return btn;
+  }
+
   // Crée la partie (silencieusement) et affiche l'écran d'accueil connecté :
-  // répertoire de chansons offert (au compte, ou répertoire libre sans
-  // compte) + bouton vers le paramétrage.
+  // répertoires de chansons (au compte, ou répertoire libre sans compte) +
+  // bouton vers le paramétrage.
   function createRoomAndShowRepertoire() {
     socket.emit('host:create', { token: authToken }, (res) => {
       if (res.error) {
@@ -260,19 +285,16 @@
       document.getElementById('roomCodeTag').style.display = 'inline-flex';
 
       document.getElementById('welcomeHint').textContent = authToken
-        ? `Bienvenue, ${authDisplayName}. Voici le répertoire de chansons offert à ton compte :`
-        : 'Voici le répertoire de chansons offert, sans compte :';
+        ? `Bienvenue, ${authDisplayName}. Voici les répertoires de chansons :`
+        : 'Voici les répertoires de chansons, sans compte :';
 
       const offeredGrid = document.getElementById('offeredRepertoireGrid');
       offeredGrid.innerHTML = '';
       if (!res.themes.length) {
-        offeredGrid.innerHTML = '<p class="hint">Aucun répertoire n\'est encore attribué à ton compte. Contacte l\'administrateur du jeu.</p>';
+        offeredGrid.innerHTML = '<p class="hint">Aucun répertoire disponible pour le moment.</p>';
       }
       res.themes.forEach((t) => {
-        const card = document.createElement('div');
-        card.className = 'option-card';
-        card.innerHTML = `<span class="option-title">${t.label}</span><span class="hint">${t.count} chansons</span>`;
-        offeredGrid.appendChild(card);
+        offeredGrid.appendChild(buildThemeCard(t, { selectable: false }));
       });
 
       // Prépare aussi la grille de sélection de thématique de l'écran de
@@ -281,13 +303,7 @@
       const themeGrid = document.getElementById('themeGrid');
       themeGrid.innerHTML = '';
       res.themes.forEach((t) => {
-        const btn = document.createElement('button');
-        btn.className = 'option-card';
-        btn.innerHTML = `<span class="option-title">${t.label}</span><span class="hint">${t.count} chansons</span>`;
-        btn.onclick = () => {
-          socket.emit('host:selectTheme', { code: roomCode, themeId: t.id });
-        };
-        themeGrid.appendChild(btn);
+        themeGrid.appendChild(buildThemeCard(t, { selectable: true }));
       });
 
       if (res.questionCount) {

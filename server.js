@@ -214,10 +214,11 @@ io.on('connection', (socket) => {
       allowedThemeIds = getFreeThemeIds();
     }
 
-    // Le compte (ou l'accès libre) n'a peut-être aucun répertoire attribué :
-    // dans ce cas il ne verra aucune thématique proposée (plutôt que tout le catalogue).
+    // On renvoie tous les répertoires existants (pas seulement ceux attribués
+    // au compte), avec un indicateur `allowed` : le client affiche nettement
+    // ceux auxquels le compte a droit, et grise les autres avec une invite à
+    // les acquérir plus tard.
     const allowedThemeSet = new Set(allowedThemeIds);
-    const availableThemes = songData.themes.filter((t) => allowedThemeSet.has(t.id));
 
     const code = generateCode();
     rooms[code] = {
@@ -244,10 +245,11 @@ io.on('connection', (socket) => {
     cb({
       code,
       displayName,
-      themes: availableThemes.map((t) => ({
+      themes: songData.themes.map((t) => ({
         id: t.id,
         label: t.label,
         count: allSongs.filter((s) => s.themes.includes(t.id)).length,
+        allowed: allowedThemeSet.has(t.id),
       })),
       questionCount: rooms[code].questionCount,
       videoDiffusion: rooms[code].videoDiffusion,

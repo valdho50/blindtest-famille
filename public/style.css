@@ -866,6 +866,28 @@ input[type="range"] {
   font-size: 1.05rem;
 }
 
+.option-card-locked {
+  opacity: 0.55;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.option-card-locked:hover {
+  opacity: 0.8;
+  background: var(--surface);
+}
+
+.lock-badge {
+  margin-top: 4px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
 /* Legacy hook: theme-btn / theme-grid class names still used in a few places */
 .theme-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
 .theme-btn { padding: 16px 12px; text-align: center; font-size: 1rem; }
