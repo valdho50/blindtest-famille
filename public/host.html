@@ -25,6 +25,10 @@
     <input id="loginPassword" type="password" placeholder="••••••••" class="input-lg" autocomplete="current-password" />
     <button id="loginBtn" class="btn-primary btn-lg btn-block">Se connecter</button>
     <p id="loginError" class="error-text"></p>
+
+    <div class="divider-or"><span>ou</span></div>
+
+    <button id="freePlayBtn" class="btn-secondary btn-block">🎁 Jouer avec le répertoire offert (sans compte)</button>
   </div>
 
   <div id="setup" class="card card-center" style="display:none;">
@@ -197,6 +201,7 @@
 
   function showLoggedIn() {
     document.getElementById('loginZone').style.display = 'none';
+    document.getElementById('logoutBtn').textContent = 'Se déconnecter';
     document.getElementById('logoutBtn').style.display = 'inline-block';
     // On saute l'étape "créer une nouvelle partie" : la partie est créée en
     // arrière-plan dès la connexion, et on affiche directement le répertoire
@@ -204,8 +209,21 @@
     createRoomAndShowRepertoire();
   }
 
+  // Accès sans compte : n'importe quel maître du jeu peut jouer directement
+  // avec le répertoire offert (thématique(s) marquée(s) "offerte" côté serveur),
+  // sans passer par la mire de connexion.
+  document.getElementById('freePlayBtn').onclick = () => {
+    authToken = null;
+    authDisplayName = '';
+    document.getElementById('loginZone').style.display = 'none';
+    document.getElementById('logoutBtn').textContent = 'Quitter';
+    document.getElementById('logoutBtn').style.display = 'inline-block';
+    createRoomAndShowRepertoire();
+  };
+
   // Crée la partie (silencieusement) et affiche l'écran d'accueil connecté :
-  // répertoire de chansons offert au compte + bouton vers le paramétrage.
+  // répertoire de chansons offert (au compte, ou répertoire libre sans
+  // compte) + bouton vers le paramétrage.
   function createRoomAndShowRepertoire() {
     socket.emit('host:create', { token: authToken }, (res) => {
       if (res.error) {
@@ -223,9 +241,9 @@
       document.getElementById('roomCodeTagValue').textContent = roomCode;
       document.getElementById('roomCodeTag').style.display = 'inline-flex';
 
-      document.getElementById('welcomeHint').textContent = authDisplayName
+      document.getElementById('welcomeHint').textContent = authToken
         ? `Bienvenue, ${authDisplayName}. Voici le répertoire de chansons offert à ton compte :`
-        : 'Voici le répertoire de chansons offert à ton compte :';
+        : 'Voici le répertoire de chansons offert, sans compte :';
 
       const offeredGrid = document.getElementById('offeredRepertoireGrid');
       offeredGrid.innerHTML = '';
@@ -301,6 +319,7 @@
 
   document.getElementById('logoutBtn').onclick = () => {
     authToken = null;
+    authDisplayName = '';
     sessionStorage.removeItem('bt_authToken');
     sessionStorage.removeItem('bt_authDisplayName');
     document.getElementById('logoutBtn').style.display = 'none';

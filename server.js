@@ -142,21 +142,36 @@ function resolveRoundMode(room) {
 io.on('connection', (socket) => {
   // --- HOST ---
   socket.on('host:create', ({ token } = {}, cb) => {
-    const session = getSession(token);
-    if (!session) {
-      cb({ error: 'Session expirée ou invalide, merci de te reconnecter.' });
-      return;
+    let hostUsername = null;
+    let displayName = null;
+    let allowedThemeIds;
+
+    if (token) {
+      const session = getSession(token);
+      if (!session) {
+        cb({ error: 'Session expirée ou invalide, merci de te reconnecter.' });
+        return;
+      }
+      hostUsername = session.username;
+      displayName = session.displayName;
+      allowedThemeIds = session.allowedThemeIds;
+    } else {
+      // Accès sans compte : n'importe quel maître du jeu peut jouer directement
+      // avec le(s) répertoire(s) marqué(s) "offert" (`free: true`) dans data/songs.json,
+      // sans passer par la mire de connexion.
+      allowedThemeIds = songData.themes.filter((t) => t.free).map((t) => t.id);
     }
-    // Le compte n'a peut-être aucun répertoire attribué : dans ce cas il ne
-    // verra aucune thématique proposée (plutôt que tout le catalogue).
-    const allowedThemeIds = new Set(session.allowedThemeIds);
-    const availableThemes = songData.themes.filter((t) => allowedThemeIds.has(t.id));
+
+    // Le compte (ou l'accès libre) n'a peut-être aucun répertoire attribué :
+    // dans ce cas il ne verra aucune thématique proposée (plutôt que tout le catalogue).
+    const allowedThemeSet = new Set(allowedThemeIds);
+    const availableThemes = songData.themes.filter((t) => allowedThemeSet.has(t.id));
 
     const code = generateCode();
     rooms[code] = {
       hostSocketId: socket.id,
-      hostUsername: session.username,
-      allowedThemeIds: session.allowedThemeIds,
+      hostUsername,
+      allowedThemeIds,
       players: {},
       theme: null,
       usedSongIds: new Set(),
@@ -176,7 +191,7 @@ io.on('connection', (socket) => {
     socket.data.isHost = true;
     cb({
       code,
-      displayName: session.displayName,
+      displayName,
       themes: availableThemes.map((t) => ({
         id: t.id,
         label: t.label,

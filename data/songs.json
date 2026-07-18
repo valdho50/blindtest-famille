@@ -2,7 +2,8 @@
   "themes": [
     {
       "id": "variete-fr",
-      "label": "Variété française"
+      "label": "Variété française",
+      "free": true
     },
     {
       "id": "pop-classiques",
