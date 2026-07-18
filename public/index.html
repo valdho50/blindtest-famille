@@ -4,10 +4,13 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Quizz — On connaît la chanson</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="style.css" />
 </head>
 <body class="landing-page">
-<div class="container container-narrow">
+<div class="container">
   <header class="app-header">
     <div class="brand-banner">
       <span class="brand-line1">Quizz</span>
@@ -15,28 +18,43 @@
     </div>
   </header>
 
-  <p class="landing-tagline">
-    Une phrase de la chanson s'affiche, vous devinez le titre et l'interprète,
-    puis on écoute l'extrait ensemble. À jouer en famille ou entre amis, à distance ou dans la même pièce.
-  </p>
+  <div class="hero-row">
+    <div class="hero-illustration">
+      <img src="photo-appli.png" alt="Un groupe d'amis, smartphone en main, en pleine réponse à un quizz musical" />
+    </div>
+    <div class="hero-steps">
+      <div class="hero-step">
+        <span class="hero-step-num">1</span>
+        <p>On se défie en musique.</p>
+      </div>
+      <div class="hero-step">
+        <span class="hero-step-num">2</span>
+        <p>On chante.</p>
+      </div>
+      <div class="hero-step">
+        <span class="hero-step-num">3</span>
+        <p>On passe un bon moment</p>
+      </div>
+    </div>
+  </div>
 
   <div class="landing-choice-grid">
     <a class="landing-choice-card landing-choice-host" href="host.html">
       <span class="landing-choice-icon">🎙️</span>
       <span class="landing-choice-title">Je suis maître du jeu</span>
-      <span class="hint">Connexion ou compte gratuit, création de la partie, animation et corrections.</span>
+      <span class="hint">Créez et animez des parties.</span>
     </a>
 
     <a class="landing-choice-card landing-choice-player" href="player.html">
       <span class="landing-choice-icon">📱</span>
       <span class="landing-choice-title">Je suis joueur</span>
-      <span class="hint">Rejoignez une partie avec le code à 4 chiffres donné par le maître du jeu.</span>
+      <span class="hint">Rejoignez une partie avec le code à 4 chiffres.</span>
     </a>
   </div>
 
   <div class="landing-footnote">
     <span class="landing-footnote-badge">🎁 Répertoire offert</span>
-    <p class="hint">Un maître du jeu peut lancer une partie gratuitement, sans créer de compte, avec le répertoire « Variété française ». Un compte permet d'en débloquer d'autres.</p>
+    <p class="hint">Un maître du jeu peut lancer une partie gratuitement, sans créer de compte, avec le répertoire « Variété française ».</p>
   </div>
 </div>
 </body>
