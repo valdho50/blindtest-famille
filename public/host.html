@@ -9,11 +9,11 @@
 <body>
 <div class="container">
   <header class="app-header">
-    <div class="app-header-icon">🎧</div>
-    <div>
-      <h1>Blind Test</h1>
-      <p class="app-subtitle">Écran du maître du jeu</p>
+    <div class="brand-banner">
+      <span class="brand-line1">Quizz</span>
+      <span class="brand-line2">On connaît la chanson</span>
     </div>
+    <p class="app-subtitle">Écran du maître du jeu</p>
   </header>
 
   <div id="setup" class="card card-center">
@@ -145,7 +145,7 @@
     </div>
   </div>
 
-  <div class="card">
+  <div id="scoreboardCard" class="card" style="display:none;">
     <h3><span class="section-icon">🏆</span> Scores</h3>
     <div id="scoreboard" class="scoreboard"></div>
   </div>
@@ -163,6 +163,7 @@
       document.getElementById('roomCode').textContent = roomCode;
       document.getElementById('setup').style.display = 'none';
       document.getElementById('lobby').style.display = 'block';
+      document.getElementById('scoreboardCard').style.display = 'block';
       const grid = document.getElementById('themeGrid');
       grid.innerHTML = '';
       res.themes.forEach((t) => {

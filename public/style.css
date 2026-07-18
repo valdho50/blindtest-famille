@@ -50,23 +50,41 @@ body {
 /* ---------- Header ---------- */
 .app-header {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 16px;
+  text-align: center;
+  gap: 8px;
   margin-bottom: 28px;
 }
 
-.app-header-icon {
-  width: 56px;
-  height: 56px;
-  flex-shrink: 0;
+.brand-banner {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: 1.8rem;
-  border-radius: 16px;
-  background: linear-gradient(145deg, rgba(251, 191, 36, 0.25), rgba(251, 191, 36, 0.05));
-  border: 1px solid rgba(251, 191, 36, 0.25);
+  padding: 18px 32px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.16), rgba(139, 92, 246, 0.22));
+  border: 1px solid rgba(251, 191, 36, 0.3);
   box-shadow: var(--shadow-soft);
+}
+
+.brand-line1 {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.brand-line2 {
+  margin-top: 4px;
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  background: linear-gradient(135deg, #ffffff, var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 h1 {
@@ -77,7 +95,7 @@ h1 {
 }
 
 .app-subtitle {
-  margin: 2px 0 0;
+  margin: 0;
   color: var(--text-muted);
   font-size: 0.95rem;
   font-weight: 500;
