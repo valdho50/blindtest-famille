@@ -56,7 +56,15 @@
     <p class="eyebrow">La bonne réponse était</p>
     <h2 id="revealTitle"></h2>
     <p class="reveal-artist" id="revealArtist"></p>
-    <p class="hint">Écoute l'extrait diffusé par le maître du jeu !</p>
+    <p id="revealHostAudioHint" class="hint">Écoute l'extrait diffusé par le maître du jeu !</p>
+
+    <div id="playerVideoZone" style="display:none;">
+      <button id="playVideoBtn" class="btn-primary btn-block">▶️ Écouter l'extrait</button>
+      <div id="playerVideoPlayer" style="display:none; margin-top:14px;">
+        <iframe id="playerDigiviewFrame" allow="picture-in-picture; autoplay; fullscreen" frameborder="0"
+          width="100%" height="auto" style="aspect-ratio: 200/150; border-radius:14px;"></iframe>
+      </div>
+    </div>
   </div>
 
   <div class="card">
@@ -164,6 +172,7 @@
   socket.on('game:phrase', ({ phrase, mode, titleOptions, artistOptions, timerEndsAt }) => {
     document.getElementById('waitZone').style.display = 'none';
     document.getElementById('revealZone').style.display = 'none';
+    document.getElementById('playerDigiviewFrame').src = '';
     document.getElementById('questionZone').style.display = 'block';
     document.getElementById('submitBar').style.display = 'block';
     document.getElementById('phraseText').textContent = phrase;
@@ -192,13 +201,39 @@
 
   document.getElementById('submitBtn').onclick = submitAnswer;
 
-  socket.on('game:revealPlayers', ({ title, artist }) => {
+  socket.on('game:revealPlayers', ({ title, artist, youtubeId, start, end }) => {
     stopTimer();
     document.getElementById('questionZone').style.display = 'none';
     document.getElementById('submitBar').style.display = 'none';
     document.getElementById('revealZone').style.display = 'block';
     document.getElementById('revealTitle').textContent = title;
     document.getElementById('revealArtist').textContent = artist;
+
+    const videoZone = document.getElementById('playerVideoZone');
+    const videoPlayer = document.getElementById('playerVideoPlayer');
+    const playBtn = document.getElementById('playVideoBtn');
+    const iframe = document.getElementById('playerDigiviewFrame');
+
+    if (youtubeId) {
+      // La vidéo est diffusée sur cet appareil : on masque le message renvoyant
+      // aux enceintes du maître du jeu et on propose un bouton de lecture — les
+      // navigateurs mobiles bloquent l'autoplay avec son sans geste explicite.
+      document.getElementById('revealHostAudioHint').style.display = 'none';
+      videoZone.style.display = 'block';
+      videoPlayer.style.display = 'none';
+      iframe.src = '';
+      playBtn.style.display = 'block';
+      playBtn.textContent = '▶️ Écouter l\'extrait';
+      playBtn.onclick = () => {
+        const vignette = encodeURIComponent(`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`);
+        iframe.src = `https://ladigitale.dev/digiview/inc/video.php?videoId=${youtubeId}&vignette=${vignette}&debut=${start}&fin=${end}&largeur=200&hauteur=150&autoplay=1`;
+        videoPlayer.style.display = 'block';
+        playBtn.style.display = 'none';
+      };
+    } else {
+      document.getElementById('revealHostAudioHint').style.display = 'block';
+      videoZone.style.display = 'none';
+    }
   });
 
   socket.on('game:scoreboard', ({ players: list }) => {

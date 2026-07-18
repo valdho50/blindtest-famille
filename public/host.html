@@ -82,6 +82,25 @@
     </div>
 
     <div class="section">
+      <h3><span class="section-icon">📺</span> Diffusion de l'extrait vidéo (à la correction)</h3>
+      <div id="videoDiffusionGrid" class="option-grid">
+        <button class="option-card videoDiffusionBtn" data-value="host">
+          <span class="option-title">Maître du jeu</span>
+          <span class="hint">Diffusé sur cet écran</span>
+        </button>
+        <button class="option-card videoDiffusionBtn" data-value="players">
+          <span class="option-title">Joueurs</span>
+          <span class="hint">Diffusé sur les appareils des joueurs</span>
+        </button>
+        <button class="option-card videoDiffusionBtn" data-value="both">
+          <span class="option-title">Les deux</span>
+          <span class="hint">Diffusé partout</span>
+        </button>
+      </div>
+      <p class="status-line" id="currentVideoDiffusionLabel">Diffusion actuelle : Maître du jeu</p>
+    </div>
+
+    <div class="section">
       <h3><span class="section-icon">🎨</span> Choisir une thématique</h3>
       <div id="themeGrid" class="option-grid option-grid-compact"></div>
     </div>
@@ -127,6 +146,7 @@
               width="100%" height="auto" style="aspect-ratio: 200/150; border-radius:14px; display:none;"></iframe>
           </div>
           <p id="videoError" class="error-text" style="display:none;"></p>
+          <p id="videoOnPlayersNotice" class="hint" style="display:none;">📱 L'extrait est diffusé sur les appareils des joueurs.</p>
         </div>
 
         <div class="reveal-answers-col">
@@ -181,6 +201,10 @@
       if (res.questionCount) {
         questionCount = res.questionCount;
         updateQuestionCountUI();
+      }
+      if (res.videoDiffusion) {
+        videoDiffusion = res.videoDiffusion;
+        updateVideoDiffusionUI();
       }
     });
   };
@@ -251,6 +275,27 @@
     };
   });
   updateQuestionCountUI();
+
+  // --- Diffusion vidéo à la correction ---
+  let videoDiffusion = 'host';
+  const videoDiffusionLabels = { host: 'Maître du jeu', players: 'Joueurs', both: 'Les deux' };
+
+  function updateVideoDiffusionUI() {
+    document.querySelectorAll('.videoDiffusionBtn').forEach((btn) => {
+      btn.classList.toggle('is-selected', btn.dataset.value === videoDiffusion);
+    });
+    document.getElementById('currentVideoDiffusionLabel').textContent =
+      `Diffusion actuelle : ${videoDiffusionLabels[videoDiffusion]}`;
+  }
+
+  document.querySelectorAll('.videoDiffusionBtn').forEach((btn) => {
+    btn.onclick = () => {
+      videoDiffusion = btn.dataset.value;
+      socket.emit('host:setVideoDiffusion', { code: roomCode, videoDiffusion });
+      updateVideoDiffusionUI();
+    };
+  });
+  updateVideoDiffusionUI();
 
   let timerInterval = null;
 
@@ -443,7 +488,7 @@
     socket.emit('host:reveal', { code: roomCode });
   };
 
-  socket.on('game:revealHost', ({ title, artist, youtubeId, start, end, isLastQuestion, answers }) => {
+  socket.on('game:revealHost', ({ title, artist, youtubeId, start, end, videoDiffusion: diffusion, isLastQuestion, answers }) => {
     document.getElementById('phraseZone').style.display = 'none';
     document.getElementById('revealZone').style.display = 'block';
     document.getElementById('revealTitle').textContent = title;
@@ -451,15 +496,21 @@
 
     document.getElementById('videoError').style.display = 'none';
 
-    // Intégration via DigiView (ladigitale.dev) : lecteur épuré, sans suggestions
-    // ni pubs, restreint à la portion start/end de la vidéo YouTube.
-    // Construction de l'iframe via l'API DOM (createElement), pas via innerHTML,
-    // pour reproduire à l'identique un iframe statique.
-    const vignette = encodeURIComponent(`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`);
-    const src = `https://ladigitale.dev/digiview/inc/video.php?videoId=${youtubeId}&vignette=${vignette}&debut=${start}&fin=${end}&largeur=200&hauteur=150`;
+    const showOnHost = diffusion !== 'players';
     const iframe = document.getElementById('digiviewFrame');
-    iframe.style.display = 'block';
-    iframe.src = src;
+    if (showOnHost) {
+      // Intégration via DigiView (ladigitale.dev) : lecteur épuré, sans suggestions
+      // ni pubs, restreint à la portion start/end de la vidéo YouTube.
+      const vignette = encodeURIComponent(`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`);
+      const src = `https://ladigitale.dev/digiview/inc/video.php?videoId=${youtubeId}&vignette=${vignette}&debut=${start}&fin=${end}&largeur=200&hauteur=150`;
+      iframe.style.display = 'block';
+      iframe.src = src;
+      document.getElementById('videoOnPlayersNotice').style.display = 'none';
+    } else {
+      iframe.style.display = 'none';
+      iframe.src = '';
+      document.getElementById('videoOnPlayersNotice').style.display = 'block';
+    }
 
     renderAnswersReview(answers || []);
 

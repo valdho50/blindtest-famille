@@ -100,6 +100,7 @@ io.on('connection', (socket) => {
       timerDuration: 30, // secondes ; 0 = pas de minuteur
       questionCount: 10, // nombre de questions pour la partie (5, 10, 15 ou 20)
       questionsAsked: 0, // nombre de questions déjà posées dans la partie en cours
+      videoDiffusion: 'host', // 'host' | 'players' | 'both' : où l'extrait vidéo est lu à la correction
     };
     socket.join(code);
     socket.data.roomCode = code;
@@ -112,6 +113,7 @@ io.on('connection', (socket) => {
         count: allSongs.filter((s) => s.themes.includes(t.id)).length,
       })),
       questionCount: rooms[code].questionCount,
+      videoDiffusion: rooms[code].videoDiffusion,
     });
   });
 
@@ -150,6 +152,14 @@ io.on('connection', (socket) => {
     if (!room || room.hostSocketId !== socket.id) return;
     if ([5, 10, 15, 20].includes(questionCount)) {
       room.questionCount = questionCount;
+    }
+  });
+
+  socket.on('host:setVideoDiffusion', ({ code, videoDiffusion }) => {
+    const room = rooms[code];
+    if (!room || room.hostSocketId !== socket.id) return;
+    if (['host', 'players', 'both'].includes(videoDiffusion)) {
+      room.videoDiffusion = videoDiffusion;
     }
   });
 
@@ -214,23 +224,27 @@ io.on('connection', (socket) => {
       titleGuess: room.pendingAnswers[id]?.titleGuess || '',
       artistGuess: room.pendingAnswers[id]?.artistGuess || '',
     }));
-    // L'extrait audio (YouTube start/end) n'est envoyé qu'au maître du jeu,
-    // qui le diffuse sur ses propres enceintes.
+    // L'extrait vidéo est toujours transmis au maître du jeu (pour contrôle/aperçu) ;
+    // il ne sera lu sur son écran que si videoDiffusion vaut 'host' ou 'both' (géré côté client).
     io.to(room.hostSocketId).emit('game:revealHost', {
       title: song.title,
       artist: song.artist,
       youtubeId: song.youtubeId,
       start: song.start,
       end: song.end,
+      videoDiffusion: room.videoDiffusion,
       isLastQuestion: room.questionsAsked >= room.questionCount,
       questionIndex: room.questionsAsked,
       questionCount: room.questionCount,
       answers,
     });
-    // Les joueurs voient seulement le titre/interprète, pas l'extrait audio.
+    // Les joueurs ne reçoivent l'extrait vidéo que si le maître du jeu a choisi de
+    // le diffuser sur leurs appareils ('players' ou 'both').
+    const sendVideoToPlayers = room.videoDiffusion === 'players' || room.videoDiffusion === 'both';
     io.to(code).except(room.hostSocketId).emit('game:revealPlayers', {
       title: song.title,
       artist: song.artist,
+      ...(sendVideoToPlayers ? { youtubeId: song.youtubeId, start: song.start, end: song.end } : {}),
     });
   }
 
