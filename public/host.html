@@ -18,6 +18,8 @@
     <button id="logoutBtn" class="logout-discreet" style="display:none;">Se déconnecter</button>
   </header>
 
+  <p id="connectionBanner" class="notice-banner" style="display:none;">🔌 Connexion au serveur interrompue — tentative de reconnexion...</p>
+
   <div id="loginZone" class="card card-center">
     <div id="loginForm">
       <p class="eyebrow">Identifiant</p>
@@ -224,6 +226,59 @@
   let authToken = sessionStorage.getItem('bt_authToken') || null;
   let authDisplayName = sessionStorage.getItem('bt_authDisplayName') || '';
 
+  // --- Reconnexion à une partie en cours ---
+  // Le token de partie est propre à cet onglet (sessionStorage) : si le
+  // maître du jeu ferme puis rouvre l'onglet, ou si le réseau coupe un
+  // instant, on retrouve automatiquement la même partie sans repartir de
+  // zéro (et sans faire perdre les scores des joueurs).
+  let hostToken = sessionStorage.getItem('bt_hostToken') || null;
+  let hasInitialized = false;
+
+  function saveRoomSession(code, token) {
+    roomCode = code;
+    hostToken = token;
+    sessionStorage.setItem('bt_roomCode', code);
+    sessionStorage.setItem('bt_hostToken', token);
+  }
+
+  function clearRoomSession() {
+    hostToken = null;
+    sessionStorage.removeItem('bt_roomCode');
+    sessionStorage.removeItem('bt_hostToken');
+  }
+
+  function hideConnectionBanner() {
+    document.getElementById('connectionBanner').style.display = 'none';
+  }
+
+  socket.on('disconnect', () => {
+    document.getElementById('connectionBanner').style.display = 'block';
+  });
+
+  socket.on('connect', () => {
+    hideConnectionBanner();
+    const storedCode = sessionStorage.getItem('bt_roomCode');
+    const storedToken = sessionStorage.getItem('bt_hostToken');
+    if (storedCode && storedToken) {
+      socket.emit('host:rejoin', { code: storedCode, hostToken: storedToken }, (res) => {
+        if (res && res.ok) {
+          restoreHostFromRejoin(res);
+        } else {
+          clearRoomSession();
+          if (!hasInitialized) startInitialFlow();
+        }
+        hasInitialized = true;
+      });
+    } else if (!hasInitialized) {
+      startInitialFlow();
+      hasInitialized = true;
+    }
+  });
+
+  function startInitialFlow() {
+    if (authToken) showLoggedIn();
+  }
+
   function showLoggedIn() {
     document.getElementById('loginZone').style.display = 'none';
     document.getElementById('logoutBtn').textContent = 'Se déconnecter';
@@ -286,7 +341,7 @@
         document.getElementById('loginError').textContent = res.error;
         return;
       }
-      roomCode = res.code;
+      saveRoomSession(res.code, res.hostToken);
       document.getElementById('roomCode').textContent = roomCode;
       document.getElementById('roomCodeTagValue').textContent = roomCode;
       document.getElementById('roomCodeTag').style.display = 'inline-flex';
@@ -326,8 +381,6 @@
     });
   }
 
-  if (authToken) showLoggedIn();
-
   document.getElementById('loginBtn').onclick = async () => {
     const username = document.getElementById('loginUsername').value.trim();
     const password = document.getElementById('loginPassword').value;
@@ -363,6 +416,7 @@
     authDisplayName = '';
     sessionStorage.removeItem('bt_authToken');
     sessionStorage.removeItem('bt_authDisplayName');
+    clearRoomSession();
     document.getElementById('logoutBtn').style.display = 'none';
     document.getElementById('setup').style.display = 'none';
     document.getElementById('lobby').style.display = 'none';
@@ -579,12 +633,14 @@
     timerInterval = setInterval(tick, 250);
   }
 
-  socket.on('lobby:update', ({ players: list }) => {
+  function renderPlayerList(list) {
     const el = document.getElementById('playerList');
     el.innerHTML = list.length
-      ? list.map((p) => `<span class="pill">${p.name}</span>`).join(' ')
+      ? list.map((p) => `<span class="pill${p.connected === false ? ' pill-disconnected' : ''}">${p.name}</span>`).join(' ')
       : 'Aucun joueur pour l\'instant.';
-  });
+  }
+
+  socket.on('lobby:update', ({ players: list }) => renderPlayerList(list));
 
   socket.on('game:themeSelected', ({ label }) => {
     selectedTheme = label;
@@ -601,17 +657,20 @@
     document.getElementById('phraseZone').style.display = 'block';
   };
 
-  socket.on('game:phrase', ({ phrase, timerEndsAt, questionIndex, questionCount: total }) => {
+  function applyPhrase({ phrase, timerEndsAt, questionIndex, questionCount: total }, { resetHintToggle = true } = {}) {
     document.getElementById('phraseText').textContent = phrase;
     if (questionIndex && total) {
       document.getElementById('questionProgressBadge').style.display = 'inline-flex';
       document.getElementById('questionProgressText').textContent = `${questionIndex} / ${total}`;
     }
-    // La réponse attendue est masquée par défaut à chaque nouvelle question.
-    document.getElementById('answerHintToggle').checked = false;
+    // La réponse attendue est masquée par défaut à chaque nouvelle question
+    // (mais reste telle quelle si on ne fait que restaurer l'écran après une reconnexion).
+    if (resetHintToggle) document.getElementById('answerHintToggle').checked = false;
     renderAnswerHint();
     if (timerEndsAt) startTimer(timerEndsAt); else stopTimer();
-  });
+  }
+
+  socket.on('game:phrase', (data) => applyPhrase(data));
 
   let expectedTitle = '';
   let expectedArtist = '';
@@ -748,7 +807,7 @@
     socket.emit('host:reveal', { code: roomCode });
   };
 
-  socket.on('game:revealHost', ({ title, artist, youtubeId, start, end, videoDiffusion: diffusion, isLastQuestion, answers }) => {
+  function applyRevealHost({ title, artist, youtubeId, start, end, videoDiffusion: diffusion, isLastQuestion, answers }) {
     document.getElementById('phraseZone').style.display = 'none';
     document.getElementById('revealZone').style.display = 'block';
     document.getElementById('revealTitle').textContent = title;
@@ -776,7 +835,9 @@
 
     document.getElementById('lastQuestionNotice').style.display = isLastQuestion ? 'block' : 'none';
     document.getElementById('nextRoundBtn').style.display = isLastQuestion ? 'none' : 'inline-flex';
-  });
+  }
+
+  socket.on('game:revealHost', (data) => applyRevealHost(data));
 
   socket.on('game:noMoreSongs', () => {
     alert('Toutes les chansons disponibles ont déjà été jouées dans cette partie.');
@@ -793,10 +854,11 @@
 
   socket.on('game:ended', ({ players: list }) => {
     alert('Partie terminée ! Scores finaux :\n' + list.map(p => `${p.name} : ${p.score}`).join('\n'));
+    clearRoomSession();
     location.reload();
   });
 
-  socket.on('game:scoreboard', ({ players: list }) => {
+  function renderScoreboard(list) {
     const el = document.getElementById('scoreboard');
     const sorted = [...list].sort((a, b) => b.score - a.score);
     el.innerHTML = sorted.map((p, i) => `
@@ -806,11 +868,91 @@
         <span class="scoreboard-score">${p.score} pt${p.score > 1 ? 's' : ''}</span>
       </div>
     `).join('') || 'Aucun joueur.';
+  }
+
+  socket.on('game:scoreboard', ({ players: list }) => renderScoreboard(list));
+
+  // Le maître du jeu a été déconnecté du serveur, mais la partie reste ouverte
+  // pendant un délai de grâce (5 min) : simple bandeau d'attente, pas d'alerte
+  // bloquante — la reconnexion automatique (voir socket.on('connect')) va
+  // tenter de reprendre la main tant que le délai n'est pas écoulé.
+  socket.on('game:hostDisconnected', () => {
+    document.getElementById('connectionBanner').textContent = '🔌 Connexion interrompue — tentative de reconnexion...';
+    document.getElementById('connectionBanner').style.display = 'block';
   });
 
+  // Ici la partie est définitivement fermée (délai de grâce écoulé sans
+  // reconnexion, ou coupure serveur constatée après un long moment).
   socket.on('game:hostLeft', () => {
-    alert('La connexion au serveur a été interrompue.');
+    alert('La connexion au serveur a été interrompue trop longtemps, la partie a été fermée.');
+    clearRoomSession();
+    location.reload();
   });
+
+  // Restaure l'écran du maître du jeu après une reconnexion réussie
+  // (host:rejoin), quelle que soit la phase où la partie en était restée.
+  function restoreHostFromRejoin(res) {
+    roomCode = res.code;
+    document.getElementById('roomCode').textContent = roomCode;
+    document.getElementById('roomCodeTagValue').textContent = roomCode;
+    document.getElementById('roomCodeTag').style.display = 'inline-flex';
+    document.getElementById('loginZone').style.display = 'none';
+    document.getElementById('setup').style.display = 'none';
+    document.getElementById('logoutBtn').style.display = 'inline-block';
+    hideConnectionBanner();
+
+    answerMode = res.answerMode || answerMode;
+    qcmRatio = typeof res.qcmRatio === 'number' ? res.qcmRatio : qcmRatio;
+    timerDuration = typeof res.timerDuration === 'number' ? res.timerDuration : timerDuration;
+    questionCount = res.questionCount || questionCount;
+    videoDiffusion = res.videoDiffusion || videoDiffusion;
+    updateModeButtonsUI();
+    updateTimerButtonsUI();
+    updateQuestionCountUI();
+    updateVideoDiffusionUI();
+    document.getElementById('mixteRatio').value = qcmRatio;
+    document.getElementById('mixteRatioValue').textContent = `${qcmRatio}%`;
+
+    renderPlayerList(res.players || []);
+    renderScoreboard(res.players || []);
+    document.getElementById('scoreboardCard').style.display = 'block';
+
+    if (res.phase === 'lobby' || !res.themeId) {
+      document.getElementById('lobby').style.display = 'block';
+      document.getElementById('game').style.display = 'none';
+      document.getElementById('scoreboardCard').style.display = 'none';
+      return;
+    }
+
+    selectedTheme = res.themeLabel;
+    document.getElementById('lobby').style.display = 'none';
+    document.getElementById('game').style.display = 'block';
+    document.getElementById('currentTheme').textContent = res.themeLabel || '';
+
+    if (res.phase === 'question' && res.currentPhrase) {
+      document.getElementById('startRoundZone').style.display = 'none';
+      document.getElementById('revealZone').style.display = 'none';
+      document.getElementById('phraseZone').style.display = 'block';
+      applyPhrase(res.currentPhrase, { resetHintToggle: false });
+      if (res.answerHint) {
+        expectedTitle = res.answerHint.title;
+        expectedArtist = res.answerHint.artist;
+        answerHintText = `${expectedTitle} — ${expectedArtist}`;
+        renderAnswerHint();
+      }
+      roundPlayers = res.players || [];
+      answeredIds = res.answeredIds || [];
+      renderPlayerStatusGrid();
+    } else if (res.phase === 'reveal' && res.revealData) {
+      document.getElementById('startRoundZone').style.display = 'none';
+      document.getElementById('phraseZone').style.display = 'none';
+      applyRevealHost(res.revealData);
+    } else {
+      document.getElementById('startRoundZone').style.display = 'block';
+      document.getElementById('phraseZone').style.display = 'none';
+      document.getElementById('revealZone').style.display = 'none';
+    }
+  }
 </script>
 </body>
 </html>

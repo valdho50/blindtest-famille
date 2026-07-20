@@ -17,6 +17,8 @@
     <p class="app-subtitle">Écran joueur</p>
   </header>
 
+  <p id="connectionBanner" class="notice-banner" style="display:none;">🔌 Connexion interrompue — tentative de reconnexion...</p>
+
   <div id="joinZone" class="card">
     <p class="eyebrow">Code de la partie</p>
     <input id="codeInput" maxlength="4" placeholder="ex : 4821" inputmode="numeric" class="input-lg input-center" />
@@ -81,6 +83,37 @@
 <script>
   const socket = io();
   let roomCode = null;
+  let playerToken = null;
+
+  // --- Reconnexion à une partie en cours ---
+  // Le token est gardé dans localStorage (et non sessionStorage) car un
+  // joueur peut fermer l'onglet ou recharger la page sur son téléphone sans
+  // perdre son score, tant que la partie est toujours ouverte côté serveur.
+  function saveSession(code, token) {
+    roomCode = code;
+    playerToken = token;
+    localStorage.setItem('bt_playerCode', code);
+    localStorage.setItem('bt_playerToken', token);
+  }
+
+  function clearSession() {
+    playerToken = null;
+    localStorage.removeItem('bt_playerCode');
+    localStorage.removeItem('bt_playerToken');
+  }
+
+  function hideConnectionBanner() {
+    document.getElementById('connectionBanner').style.display = 'none';
+  }
+
+  function showJoinScreen(errorMsg) {
+    document.getElementById('joinZone').style.display = 'block';
+    document.getElementById('waitZone').style.display = 'none';
+    document.getElementById('questionZone').style.display = 'none';
+    document.getElementById('revealZone').style.display = 'none';
+    document.getElementById('submitBar').style.display = 'none';
+    if (errorMsg) document.getElementById('joinError').textContent = errorMsg;
+  }
 
   document.getElementById('joinBtn').onclick = () => {
     const code = document.getElementById('codeInput').value.trim();
@@ -94,11 +127,63 @@
         document.getElementById('joinError').textContent = res.error;
         return;
       }
-      roomCode = code;
+      saveSession(code, res.token);
+      document.getElementById('joinError').textContent = '';
       document.getElementById('joinZone').style.display = 'none';
       document.getElementById('waitZone').style.display = 'block';
     });
   };
+
+  let hasInitialized = false;
+
+  socket.on('disconnect', () => {
+    document.getElementById('connectionBanner').style.display = 'block';
+  });
+
+  // Sur chaque (re)connexion — au chargement de la page, après une coupure
+  // réseau, ou après un rechargement d'onglet — on retente de rejoindre la
+  // partie avec le token stocké, pour récupérer le score et l'écran en cours
+  // plutôt que de repartir d'un score à zéro.
+  socket.on('connect', () => {
+    hideConnectionBanner();
+    const storedCode = localStorage.getItem('bt_playerCode');
+    const storedToken = localStorage.getItem('bt_playerToken');
+    if (storedCode && storedToken) {
+      socket.emit('player:rejoin', { code: storedCode, token: storedToken }, (res) => {
+        if (res && res.ok) {
+          roomCode = storedCode;
+          playerToken = storedToken;
+          restorePlayerFromRejoin(res);
+        } else {
+          clearSession();
+          if (!hasInitialized) showJoinScreen();
+        }
+        hasInitialized = true;
+      });
+    } else if (!hasInitialized) {
+      showJoinScreen();
+      hasInitialized = true;
+    }
+  });
+
+  function restorePlayerFromRejoin(res) {
+    document.getElementById('joinZone').style.display = 'none';
+    if (res.phase === 'question' && res.currentPhrase) {
+      applyPhrase(res.currentPhrase);
+      if (res.alreadyAnswered) {
+        document.getElementById('submittedMsg').style.display = 'block';
+        document.getElementById('submitBtn').disabled = true;
+        document.getElementById('submitBtn').textContent = 'Réponse envoyée';
+      }
+    } else if (res.phase === 'reveal' && res.revealData) {
+      applyReveal(res.revealData);
+    } else {
+      document.getElementById('waitZone').style.display = 'block';
+      document.getElementById('questionZone').style.display = 'none';
+      document.getElementById('revealZone').style.display = 'none';
+      document.getElementById('submitBar').style.display = 'none';
+    }
+  }
 
   let currentMode = 'libre';
   let selectedTitle = null;
@@ -169,7 +254,7 @@
     document.getElementById('submitBtn').disabled = true;
   }
 
-  socket.on('game:phrase', ({ phrase, mode, titleOptions, artistOptions, timerEndsAt }) => {
+  function applyPhrase({ phrase, mode, titleOptions, artistOptions, timerEndsAt }) {
     document.getElementById('waitZone').style.display = 'none';
     document.getElementById('revealZone').style.display = 'none';
     document.getElementById('playerDigiviewFrame').src = '';
@@ -187,8 +272,8 @@
     if (currentMode === 'qcm') {
       document.getElementById('libreZone').style.display = 'none';
       document.getElementById('qcmZone').style.display = 'block';
-      renderOptions('titleOptions', titleOptions, (v) => { selectedTitle = v; });
-      renderOptions('artistOptions', artistOptions, (v) => { selectedArtist = v; });
+      renderOptions('titleOptions', titleOptions || [], (v) => { selectedTitle = v; });
+      renderOptions('artistOptions', artistOptions || [], (v) => { selectedArtist = v; });
     } else {
       document.getElementById('qcmZone').style.display = 'none';
       document.getElementById('libreZone').style.display = 'block';
@@ -197,11 +282,13 @@
     }
 
     if (timerEndsAt) startTimer(timerEndsAt); else stopTimer();
-  });
+  }
+
+  socket.on('game:phrase', (data) => applyPhrase(data));
 
   document.getElementById('submitBtn').onclick = submitAnswer;
 
-  socket.on('game:revealPlayers', ({ title, artist, youtubeId, start, end }) => {
+  function applyReveal({ title, artist, youtubeId, start, end }) {
     stopTimer();
     document.getElementById('questionZone').style.display = 'none';
     document.getElementById('submitBar').style.display = 'none';
@@ -234,7 +321,9 @@
       document.getElementById('revealHostAudioHint').style.display = 'block';
       videoZone.style.display = 'none';
     }
-  });
+  }
+
+  socket.on('game:revealPlayers', (data) => applyReveal(data));
 
   socket.on('game:scoreboard', ({ players: list }) => {
     const el = document.getElementById('scoreboard');
@@ -251,10 +340,21 @@
   socket.on('game:ended', ({ players: list }) => {
     document.getElementById('submitBar').style.display = 'none';
     alert('Partie terminée ! Merci d\'avoir joué 🎉');
+    clearSession();
   });
 
+  // Le maître du jeu a été déconnecté du serveur, mais la partie reste ouverte
+  // pendant un délai de grâce : simple bandeau d'attente, la partie continue.
+  socket.on('game:hostDisconnected', () => {
+    document.getElementById('connectionBanner').textContent = '🔌 Le maître du jeu a été déconnecté — en attente de reconnexion...';
+    document.getElementById('connectionBanner').style.display = 'block';
+  });
+
+  // Ici la partie est définitivement fermée (délai de grâce écoulé).
   socket.on('game:hostLeft', () => {
     alert('Le maître du jeu a quitté la partie.');
+    clearSession();
+    location.reload();
   });
 </script>
 </body>

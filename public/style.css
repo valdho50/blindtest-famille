@@ -924,6 +924,11 @@ input[type="range"] {
   font-weight: 600;
 }
 
+.pill-disconnected {
+  opacity: 0.5;
+  font-style: italic;
+}
+
 /* ---------- Game status bar ---------- */
 .game-status-bar {
   display: flex;

@@ -10,7 +10,22 @@ const resendClient = require('./resend');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  // Permet à Socket.io de restaurer tout seul une connexion coupée
+  // brièvement (coupure réseau, veille du téléphone) sans perdre les rooms.
+  // Vient en complément de la reconnexion manuelle par token ci-dessous, qui
+  // couvre elle les cas plus durs (page rechargée, onglet fermé/rouvert).
+  connectionStateRecovery: {
+    maxDisconnectionDuration: 5 * 60 * 1000,
+    skipMiddlewares: true,
+  },
+});
+
+// Délai de grâce avant de considérer une déconnexion comme définitive :
+// pendant ce délai, la partie/le score restent en mémoire et peuvent être
+// récupérés via host:rejoin / player:rejoin.
+const HOST_GRACE_MS = 5 * 60 * 1000; // 5 minutes
+const PLAYER_GRACE_MS = 10 * 60 * 1000; // 10 minutes (le temps de relancer l'appli)
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -229,6 +244,7 @@ function publicPlayers(room) {
     id,
     name: p.name,
     score: p.score,
+    connected: !p.disconnected,
   }));
 }
 
@@ -309,8 +325,12 @@ io.on('connection', (socket) => {
     const allowedThemeSet = new Set(allowedThemeIds);
 
     const code = generateCode();
+    const hostToken = crypto.randomUUID();
     rooms[code] = {
       hostSocketId: socket.id,
+      hostToken,
+      hostDisconnected: false,
+      hostDisconnectTimer: null,
       hostUsername,
       allowedThemeIds,
       players: {},
@@ -318,6 +338,9 @@ io.on('connection', (socket) => {
       usedSongIds: new Set(),
       currentSong: null,
       currentRoundMode: 'libre',
+      currentTitleOptions: null,
+      currentArtistOptions: null,
+      currentTimerEndsAt: null,
       phase: 'lobby',
       pendingAnswers: {},
       answerMode: 'libre', // 'libre' | 'qcm' | 'mixte'
@@ -332,6 +355,7 @@ io.on('connection', (socket) => {
     socket.data.isHost = true;
     cb({
       code,
+      hostToken,
       displayName,
       themes: songData.themes.map((t) => ({
         id: t.id,
@@ -341,6 +365,72 @@ io.on('connection', (socket) => {
       })),
       questionCount: rooms[code].questionCount,
       videoDiffusion: rooms[code].videoDiffusion,
+    });
+  });
+
+  // Reconnexion du maître du jeu à une partie déjà créée (coupure réseau,
+  // page rechargée, onglet fermé/rouvert...). Nécessite le token reçu à la
+  // création de la room ; ne fonctionne que pendant le délai de grâce suivant
+  // une déconnexion (la room est ensuite définitivement fermée).
+  socket.on('host:rejoin', ({ code, hostToken } = {}, cb) => {
+    const room = rooms[code];
+    if (!room || !hostToken || room.hostToken !== hostToken) {
+      cb && cb({ ok: false, error: 'Partie introuvable ou trop ancienne pour être reprise.' });
+      return;
+    }
+    if (room.hostDisconnectTimer) {
+      clearTimeout(room.hostDisconnectTimer);
+      room.hostDisconnectTimer = null;
+    }
+    room.hostDisconnected = false;
+    room.hostSocketId = socket.id;
+    socket.join(code);
+    socket.data.roomCode = code;
+    socket.data.isHost = true;
+
+    io.to(code).except(socket.id).emit('game:hostReconnected');
+
+    const theme = songData.themes.find((t) => t.id === room.theme);
+    cb && cb({
+      ok: true,
+      code,
+      phase: room.phase,
+      themeId: room.theme,
+      themeLabel: theme ? theme.label : null,
+      players: publicPlayers(room),
+      answerMode: room.answerMode,
+      qcmRatio: room.qcmRatio,
+      timerDuration: room.timerDuration,
+      questionCount: room.questionCount,
+      videoDiffusion: room.videoDiffusion,
+      currentPhrase: (room.phase === 'question' && room.currentSong) ? {
+        phrase: room.currentSong.phrase,
+        mode: room.currentRoundMode,
+        questionIndex: room.questionsAsked,
+        questionCount: room.questionCount,
+        ...(room.currentTimerEndsAt ? { timerEndsAt: room.currentTimerEndsAt } : {}),
+      } : null,
+      answerHint: (room.phase === 'question' && room.currentSong) ? {
+        title: room.currentSong.title,
+        artist: room.currentSong.artist,
+      } : null,
+      answeredIds: room.phase === 'question' ? Object.keys(room.pendingAnswers) : [],
+      revealData: (room.phase === 'reveal' && room.currentSong) ? {
+        title: room.currentSong.title,
+        artist: room.currentSong.artist,
+        youtubeId: room.currentSong.youtubeId,
+        start: room.currentSong.start,
+        end: room.currentSong.end,
+        videoDiffusion: room.videoDiffusion,
+        isLastQuestion: room.questionsAsked >= room.questionCount,
+        questionIndex: room.questionsAsked,
+        answers: Object.entries(room.players).map(([id, p]) => ({
+          id,
+          name: p.name,
+          titleGuess: room.pendingAnswers[id]?.titleGuess || '',
+          artistGuess: room.pendingAnswers[id]?.artistGuess || '',
+        })),
+      } : null,
     });
   });
 
@@ -409,6 +499,9 @@ io.on('connection', (socket) => {
     room.questionsAsked += 1;
     const roundMode = resolveRoundMode(room);
     room.currentRoundMode = roundMode;
+    room.currentTitleOptions = null;
+    room.currentArtistOptions = null;
+    room.currentTimerEndsAt = null;
 
     const payload = {
       phrase: song.phrase,
@@ -419,10 +512,13 @@ io.on('connection', (socket) => {
     if (roundMode === 'qcm') {
       payload.titleOptions = buildOptions(song.title, allTitles);
       payload.artistOptions = buildOptions(song.artist, allArtists);
+      room.currentTitleOptions = payload.titleOptions;
+      room.currentArtistOptions = payload.artistOptions;
     }
     if (room.timerDuration > 0) {
       payload.timerDuration = room.timerDuration;
       payload.timerEndsAt = Date.now() + room.timerDuration * 1000;
+      room.currentTimerEndsAt = payload.timerEndsAt;
     }
     io.to(code).emit('game:phrase', payload);
     // Roster des joueurs de la manche + statut (aucun n'a encore répondu) pour
@@ -510,13 +606,89 @@ io.on('connection', (socket) => {
       cb({ ok: false, error: 'Code de partie inconnu.' });
       return;
     }
-    room.players[socket.id] = { name: name.slice(0, 20) || 'Joueur', score: 0 };
+    const token = crypto.randomUUID();
+    room.players[socket.id] = {
+      name: name.slice(0, 20) || 'Joueur',
+      score: 0,
+      token,
+      disconnected: false,
+      disconnectTimer: null,
+    };
     socket.join(code);
     socket.data.roomCode = code;
     socket.data.isHost = false;
-    cb({ ok: true });
+    cb({ ok: true, token });
     io.to(room.hostSocketId).emit('lobby:update', { players: publicPlayers(room) });
     io.to(code).emit('game:scoreboard', { players: publicPlayers(room) });
+  });
+
+  // Reconnexion d'un joueur à une partie déjà rejointe (coupure réseau, page
+  // rechargée...) : retrouve son score via le token reçu lors du player:join
+  // initial, tant que le délai de grâce suivant sa déconnexion n'est pas
+  // écoulé. Si le token est inconnu/expiré, le client retombe sur un join
+  // classique (nouveau joueur, score à 0).
+  socket.on('player:rejoin', ({ code, token } = {}, cb) => {
+    const room = rooms[code];
+    if (!room || !token) {
+      cb && cb({ ok: false, error: 'Partie introuvable ou terminée.' });
+      return;
+    }
+    let entry = null;
+    let oldId = null;
+    for (const [id, p] of Object.entries(room.players)) {
+      if (p.token === token) {
+        entry = p;
+        oldId = id;
+        break;
+      }
+    }
+    if (!entry) {
+      cb && cb({ ok: false, error: 'Session expirée, rejoins avec ton pseudo.' });
+      return;
+    }
+    if (entry.disconnectTimer) {
+      clearTimeout(entry.disconnectTimer);
+      entry.disconnectTimer = null;
+    }
+    entry.disconnected = false;
+    if (oldId !== socket.id) {
+      delete room.players[oldId];
+      room.players[socket.id] = entry;
+      if (room.pendingAnswers[oldId]) {
+        room.pendingAnswers[socket.id] = room.pendingAnswers[oldId];
+        delete room.pendingAnswers[oldId];
+      }
+    }
+    socket.join(code);
+    socket.data.roomCode = code;
+    socket.data.isHost = false;
+
+    if (room.hostSocketId) io.to(room.hostSocketId).emit('lobby:update', { players: publicPlayers(room) });
+    io.to(code).emit('game:scoreboard', { players: publicPlayers(room) });
+
+    cb && cb({
+      ok: true,
+      name: entry.name,
+      score: entry.score,
+      phase: room.phase,
+      currentPhrase: (room.phase === 'question' && room.currentSong) ? {
+        phrase: room.currentSong.phrase,
+        mode: room.currentRoundMode,
+        titleOptions: room.currentRoundMode === 'qcm' ? room.currentTitleOptions : undefined,
+        artistOptions: room.currentRoundMode === 'qcm' ? room.currentArtistOptions : undefined,
+        timerEndsAt: room.currentTimerEndsAt || undefined,
+      } : null,
+      alreadyAnswered: !!room.pendingAnswers[socket.id],
+      revealData: (room.phase === 'reveal' && room.currentSong) ? {
+        title: room.currentSong.title,
+        artist: room.currentSong.artist,
+        ...((room.videoDiffusion === 'players' || room.videoDiffusion === 'both') ? {
+          youtubeId: room.currentSong.youtubeId,
+          start: room.currentSong.start,
+          end: room.currentSong.end,
+        } : {}),
+      } : null,
+    });
   });
 
   socket.on('player:submitAnswer', ({ code, titleGuess, artistGuess }) => {
@@ -542,11 +714,32 @@ io.on('connection', (socket) => {
     if (!code || !rooms[code]) return;
     const room = rooms[code];
     if (socket.data.isHost) {
-      io.to(code).emit('game:hostLeft');
-      delete rooms[code];
+      // Une reconnexion (host:rejoin) a peut-être déjà pris la main sur un
+      // nouveau socket entre-temps : dans ce cas ce n'est plus la connexion
+      // active, on ne touche à rien.
+      if (room.hostSocketId !== socket.id) return;
+      room.hostDisconnected = true;
+      // Message non bloquant côté joueurs : la partie n'est pas terminée,
+      // le maître du jeu a le temps de revenir avant que tout ne soit fermé.
+      io.to(code).emit('game:hostDisconnected');
+      room.hostDisconnectTimer = setTimeout(() => {
+        if (rooms[code] && rooms[code].hostDisconnected) {
+          io.to(code).emit('game:hostLeft');
+          delete rooms[code];
+        }
+      }, HOST_GRACE_MS);
     } else {
-      delete room.players[socket.id];
-      io.to(room.hostSocketId).emit('lobby:update', { players: publicPlayers(room) });
+      const player = room.players[socket.id];
+      if (!player) return;
+      player.disconnected = true;
+      player.disconnectTimer = setTimeout(() => {
+        if (rooms[code] && rooms[code].players[socket.id] === player) {
+          delete rooms[code].players[socket.id];
+          if (rooms[code].hostSocketId) io.to(rooms[code].hostSocketId).emit('lobby:update', { players: publicPlayers(rooms[code]) });
+          io.to(code).emit('game:scoreboard', { players: publicPlayers(rooms[code]) });
+        }
+      }, PLAYER_GRACE_MS);
+      if (room.hostSocketId) io.to(room.hostSocketId).emit('lobby:update', { players: publicPlayers(room) });
       io.to(code).emit('game:scoreboard', { players: publicPlayers(room) });
     }
   });
