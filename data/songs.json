@@ -1,0 +1,1324 @@
+{
+  "themes": [
+    {
+      "id": "variete-fr",
+      "label": "Variété française"
+    },
+    {
+      "id": "pop-classiques",
+      "label": "Pop & Classiques"
+    },
+    {
+      "id": "annees-80",
+      "label": "Années 80"
+    },
+    {
+      "id": "tubes-ete",
+      "label": "Tubes de l'été"
+    },
+    {
+      "id": "annees-90",
+      "label": "Années 90"
+    },
+    {
+      "id": "annees-2000",
+      "label": "Années 2000"
+    },
+    {
+      "id": "annees-2010",
+      "label": "Années 2010"
+    },
+    {
+      "id": "rock-francais",
+      "label": "Rock français"
+    },
+    {
+      "id": "chanson-a-texte",
+      "label": "Chanson à texte"
+    },
+    {
+      "id": "comedie-musicale",
+      "label": "Comédie musicale"
+    },
+    {
+      "id": "disco-francais",
+      "label": "Disco français"
+    },
+    {
+      "id": "rap-francais",
+      "label": "Rap français"
+    }
+  ],
+  "songs": [
+    {
+      "id": "s001",
+      "phrase": "Tu t'souviens de jours anciens et tu pleures, tu suffoques, tu blêmis à présent qu'a sonné l'heure",
+      "title": "Je suis venu te dire que je m'en vais",
+      "artist": "Serge Gainsbourg",
+      "youtubeId": "6RAJdafk1Y8",
+      "start": 18,
+      "end": 48,
+      "themes": [
+        "variete-fr",
+        "chanson-a-texte"
+      ]
+    },
+    {
+      "id": "s002",
+      "phrase": "Regarde ma vie, tu la vois face à face, dis-moi ton avis, que veux-tu que j'y fasse",
+      "title": "Il suffira d'un signe",
+      "artist": "Jean-Jacques Goldman",
+      "youtubeId": "Vav-2sgJ4MI",
+      "start": 69,
+      "end": 99,
+      "themes": [
+        "variete-fr",
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "s003",
+      "phrase": "Dans les bars à la tombée du jour, avec les marins, quand on parle de filles et d'amour, un verre à la main",
+      "title": "Emmenez-moi",
+      "artist": "Charles Aznavour",
+      "youtubeId": "0OrKMaeQUx0",
+      "start": 50,
+      "end": 80,
+      "themes": [
+        "variete-fr",
+        "pop-classiques",
+        "chanson-a-texte"
+      ]
+    },
+    {
+      "id": "s004",
+      "phrase": "Je creuserai la terre jusqu'après ma mort, pour couvrir ton corps d'or et de lumière",
+      "title": "Ne me quitte pas",
+      "artist": "Jacques Brel",
+      "youtubeId": "oR_SZR_tmxM",
+      "start": 56,
+      "end": 86,
+      "themes": [
+        "variete-fr",
+        "chanson-a-texte",
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "s005",
+      "phrase": "Si je pouvais me réveiller à ses côtés, si je savais où la trouver",
+      "title": "J'ai encore rêvé d'elle",
+      "artist": "Il était une fois",
+      "youtubeId": "jGRaXdT2-58",
+      "start": 59,
+      "end": 89,
+      "themes": [
+        "variete-fr",
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "s006",
+      "phrase": "Prendre le temps, de temps en temps, de refaire d'un homme un enfant et s'éblouir",
+      "title": "Pour le plaisir",
+      "artist": "Herbert Léonard",
+      "youtubeId": "2fy-h6QcfkE",
+      "start": 57,
+      "end": 87,
+      "themes": [
+        "variete-fr",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s007",
+      "phrase": "J'y crois comme à la terre, j'y crois comme au soleil, j'y crois comme un enfant, comme on peut croire au ciel",
+      "title": "Je te promets",
+      "artist": "Johnny Hallyday",
+      "youtubeId": "-TkrMyXYbik",
+      "start": 95,
+      "end": 125,
+      "themes": [
+        "variete-fr",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s008",
+      "phrase": "Tu m'as dit j'ai rendez-vous dans un sous-sol avec des fous, qui vivent la guitare à la main, du soir au matin",
+      "title": "Les Champs-Élysées",
+      "artist": "Joe Dassin",
+      "youtubeId": "tDWeLlvYyYU",
+      "start": 38,
+      "end": 68,
+      "themes": [
+        "pop-classiques",
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "s009",
+      "phrase": "Je regarde cette vague qui n'atteindra jamais la dune, tu vois, comme elle je reviens en arrière",
+      "title": "L'été indien",
+      "artist": "Joe Dassin",
+      "youtubeId": "tQb4eWCAq8c",
+      "start": 90,
+      "end": 120,
+      "themes": [
+        "pop-classiques",
+        "variete-fr",
+        "tubes-ete"
+      ]
+    },
+    {
+      "id": "s010",
+      "phrase": "Et dans le bruit, je cours et j'ai peur, est-ce mon tour ? Revient la douleur...",
+      "title": "Dernière danse",
+      "artist": "Indila",
+      "youtubeId": "K5KAc5CoCuk",
+      "start": 62,
+      "end": 92,
+      "themes": [
+        "pop-classiques",
+        "annees-2010"
+      ]
+    },
+    {
+      "id": "s011",
+      "phrase": "Qui dit crise te dit monde, dit famine dit tiers-monde, qui dit fatigue dit réveille encore sourd de la veille",
+      "title": "Alors on danse",
+      "artist": "Stromae",
+      "youtubeId": "VHoT4N43jK8",
+      "start": 46,
+      "end": 76,
+      "themes": [
+        "pop-classiques",
+        "annees-2010"
+      ]
+    },
+    {
+      "id": "s012",
+      "phrase": "Le spleen n'est plus à la mode, c'est pas compliqué d'être heureux",
+      "title": "Tout oublier",
+      "artist": "Angèle",
+      "youtubeId": "Fy1xQSiLx8U",
+      "start": 21,
+      "end": 51,
+      "themes": [
+        "pop-classiques",
+        "annees-2010"
+      ]
+    },
+    {
+      "id": "s013",
+      "phrase": "Elle a gommé les chiffres des horloges du quartier, elle a fait de ma vie des cocottes en papier, des éclats de rire",
+      "title": "Je l'aime à mourir",
+      "artist": "Francis Cabrel",
+      "youtubeId": "MzvlalfN0Es",
+      "start": 22,
+      "end": 52,
+      "themes": [
+        "pop-classiques",
+        "chanson-a-texte",
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "s014",
+      "phrase": "J'ai pas choisi de vivre ici, entre la soumission, la peur ou l'abandon, je m'en sortirai, je te le jure",
+      "title": "Envole-moi",
+      "artist": "Jean-Jacques Goldman",
+      "youtubeId": "oltptNDHocw",
+      "start": 35,
+      "end": 65,
+      "themes": [
+        "pop-classiques",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s015",
+      "phrase": "Que les choses ont changé, que les fleurs ont fané, que le temps d'avant, c'était le temps d'avant",
+      "title": "Pour que tu m'aimes encore",
+      "artist": "Céline Dion",
+      "youtubeId": "AzaTyxMduH4",
+      "start": 27,
+      "end": 57,
+      "themes": [
+        "variete-fr",
+        "annees-90",
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "s016",
+      "phrase": "Et même s'il faut partir, changer de terre ou de trace",
+      "title": "Au bout de mes rêves",
+      "artist": "Jean-Jacques Goldman",
+      "youtubeId": "o3hX0DU1QoI",
+      "start": 65,
+      "end": 95,
+      "themes": [
+        "variete-fr",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s017",
+      "phrase": "Et puisque tu penses comme une intime évidence que parfois même tout donner n'est pas forcément suffire",
+      "title": "Puisque tu pars",
+      "artist": "Jean-Jacques Goldman",
+      "youtubeId": "ly2IHt74Xhg",
+      "start": 100,
+      "end": 130,
+      "themes": [
+        "variete-fr",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s018",
+      "phrase": "On a tant d'amour à faire, tant de bonheur à venir, je te veux mari et père, et toi, tu rêves de partir",
+      "title": "Là-bas",
+      "artist": "Jean-Jacques Goldman",
+      "youtubeId": "zFwaRmpzvjo",
+      "start": 124,
+      "end": 154,
+      "themes": [
+        "variete-fr",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s019",
+      "phrase": "Avec mes souvenirs j'ai allumé le feu, mes chagrins, mes plaisirs, je n'ai plus besoin d'eux",
+      "title": "Non, je ne regrette rien",
+      "artist": "Edith Piaf",
+      "youtubeId": "Q3Kvu6Kgp88",
+      "start": 6,
+      "end": 36,
+      "themes": [
+        "variete-fr",
+        "pop-classiques",
+        "chanson-a-texte"
+      ]
+    },
+    {
+      "id": "s020",
+      "phrase": "Et si tu crois que c'est fini, jamais, c'est juste une pause, un répit après les dangers",
+      "title": "Sous le vent",
+      "artist": "Garou et Céline Dion",
+      "youtubeId": "a2_ss9y-VjE",
+      "start": 38,
+      "end": 68,
+      "themes": [
+        "variete-fr",
+        "annees-2000"
+      ]
+    },
+    {
+      "id": "s021",
+      "phrase": "C'est fou c'qu'un crépuscule de printemps rappelle le même crépuscule d'y a 10 ans, trottoirs usés par les regards baissés, qu'est-ce que j'ai fait de ces années ?",
+      "title": "Place des grands hommes",
+      "artist": "Patrick Bruel",
+      "youtubeId": "C9K5_AwMGdw",
+      "start": 31,
+      "end": 61,
+      "themes": [
+        "variete-fr",
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s022",
+      "phrase": "Il y a ceux qui veulent mourir un jour de pluie et d'autres en plein soleil, il y a ceux qui veulent mourir seuls dans un lit tranquilles dans leur sommeil",
+      "title": "Mourir sur scène",
+      "artist": "Dalida",
+      "youtubeId": "qxIQVeppGQY",
+      "start": 34,
+      "end": 64,
+      "themes": [
+        "pop-classiques",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s023",
+      "phrase": "Nous irons voir ensemble les jardins refleuris et déambulerons dans les rues de Paris",
+      "title": "Dis, quand reviendras-tu",
+      "artist": "Barbara",
+      "youtubeId": "nUE80DTNxK4",
+      "start": 28,
+      "end": 58,
+      "themes": [
+        "pop-classiques",
+        "chanson-a-texte"
+      ]
+    },
+    {
+      "id": "s024",
+      "phrase": "Savoir attendre, goûter à ce plein bonheur qu'on vous donne comme par erreur, tant on ne l'attendait plus",
+      "title": "Savoir Aimer",
+      "artist": "Florent Pagny",
+      "youtubeId": "g-gh2hIRhkc",
+      "start": 82,
+      "end": 112,
+      "themes": [
+        "variete-fr",
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s025",
+      "phrase": "Et perdue parmi ces gens qui me bousculent, étourdie, désemparée, je reste là",
+      "title": "La foule",
+      "artist": "Edith Piaf",
+      "youtubeId": "Fgn8gZHJZzA",
+      "start": 22,
+      "end": 52,
+      "themes": [
+        "pop-classiques",
+        "chanson-a-texte"
+      ]
+    },
+    {
+      "id": "s026",
+      "phrase": "On s'est moqué tellement d'fois des gens qui faisaient ça",
+      "title": "J'te l'dis quand même",
+      "artist": "Patrick Bruel",
+      "youtubeId": "7pYsogUGPoY",
+      "start": 27,
+      "end": 57,
+      "themes": [
+        "variete-fr",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s027",
+      "phrase": "A moi, à la folie dont tu es la raison, à mes colères sans savoir pourquoi",
+      "title": "A toi",
+      "artist": "Joe Dassin",
+      "youtubeId": "xwiPiQFqD-U",
+      "start": 54,
+      "end": 84,
+      "themes": [
+        "variete-fr",
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "s028",
+      "phrase": "Et si l'humble garni qui nous servait de nid ne payait pas de mine, c'est là qu'on s'est connu",
+      "title": "La bohème",
+      "artist": "Charles Aznavour",
+      "youtubeId": "fVfnEyLOkrM",
+      "start": 23,
+      "end": 53,
+      "themes": [
+        "pop-classiques",
+        "chanson-a-texte"
+      ]
+    },
+    {
+      "id": "s029",
+      "phrase": "Y avait qu'un dimanche par semaine, les autres jours, c'était la graine",
+      "title": "Mon vieux",
+      "artist": "Daniel Guichard",
+      "youtubeId": "x8l43czQAy4",
+      "start": 26,
+      "end": 56,
+      "themes": [
+        "pop-classiques",
+        "chanson-a-texte"
+      ]
+    },
+    {
+      "id": "s030",
+      "phrase": "Si tu réalises que la vie n'est pas là, que le matin tu te lèves sans savoir où tu vas",
+      "title": "Résiste",
+      "artist": "France Gall",
+      "youtubeId": "SPBVplEp7xE",
+      "start": 24,
+      "end": 54,
+      "themes": [
+        "variete-fr",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s031",
+      "phrase": "Vous mes amis essayez de comprendre, une seule fille au monde peut me rendre tout ce que j'ai perdu, je sais qu'elle ne reviendra pas",
+      "title": "Qui saura",
+      "artist": "Mike Brant",
+      "youtubeId": "4FN_8L7dSBc",
+      "start": 54,
+      "end": 84,
+      "themes": [
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "s032",
+      "phrase": "Sean Kelly s'est dit : je suis catholique, Maureen aussi",
+      "title": "Les lacs du Connemara",
+      "artist": "Michel Sardou",
+      "youtubeId": "bpEmjxobvbY",
+      "start": 91,
+      "end": 121,
+      "themes": [
+        "variete-fr",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s033",
+      "phrase": "Si j'avais su qu'un matin je serai là, sali, jugé, sur un banc, par l'ombre d'un corps que j'ai serré si souvent pour un enfant",
+      "title": "Mon fils ma bataille",
+      "artist": "Daniel Balavoine",
+      "youtubeId": "vUOxbQO6IE4",
+      "start": 31,
+      "end": 61,
+      "themes": [
+        "variete-fr",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s034",
+      "phrase": "A faire flamber des enfers dans tes yeux, à faire jurer tous les tonnerres de Dieu",
+      "title": "Je vais t'aimer",
+      "artist": "Michel Sardou",
+      "youtubeId": "DyvukrAgZ-g",
+      "start": 112,
+      "end": 142,
+      "themes": [
+        "variete-fr",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s035",
+      "phrase": "On sourit en revoyant sur les photos jaunies l'air un peu trop sûr de soi que l'on prend à seize ans",
+      "title": "Du côté de chez Swann",
+      "artist": "Dave",
+      "youtubeId": "SzvC1OWCBL4",
+      "start": 32,
+      "end": 62,
+      "themes": [
+        "variete-fr",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s036",
+      "phrase": "À corps perdu j'ai couru, assoiffé, obstiné, vers l'horizon, l'illusion, vers l'abstrait",
+      "title": "Mes emmerdes",
+      "artist": "Charles Aznavour",
+      "youtubeId": "2r5eblPTpAI",
+      "start": 26,
+      "end": 56,
+      "themes": [
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "s037",
+      "phrase": "Tous les hommes vont en galère à la pêche ou à la guerre",
+      "title": "En chantant",
+      "artist": "Michel Sardou",
+      "youtubeId": "CHp4Z8xZpsM",
+      "start": 81,
+      "end": 111,
+      "themes": [
+        "variete-fr",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s038",
+      "phrase": "Comme un sourire. Quelque chose dans la voix. Qui paraît nous dire \"viens\". Qui nous fait sentir étrangement bien. C'est comme toute l'histoire.",
+      "title": "Ella, elle l'a",
+      "artist": "France Gall",
+      "youtubeId": "vPhDZxmtIS4",
+      "start": 20,
+      "end": 30,
+      "themes": [
+        "variete-fr",
+        "pop-classiques",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s039",
+      "phrase": "Ça je l'ai bien connu. Je mène ma vie. Comme un radeau perdu. Les gens de la nuit. Sont toujours là quand il faut.",
+      "title": "Vancouver",
+      "artist": "Véronique Sanson",
+      "youtubeId": "enMz7P55B0A",
+      "start": 6,
+      "end": 36,
+      "themes": [
+        "variete-fr",
+        "chanson-a-texte"
+      ]
+    },
+    {
+      "id": "s040",
+      "phrase": "Et soudain. Ça revient. Pour un bateau qui s'en va. Et revient. II y a mille coquilles de noix.",
+      "title": "Ce n'est rien",
+      "artist": "Julien Clerc",
+      "youtubeId": "CBcv7iyVtvs",
+      "start": 13,
+      "end": 43,
+      "themes": [
+        "variete-fr",
+        "chanson-a-texte"
+      ]
+    },
+    {
+      "id": "s041",
+      "phrase": "Florence, Milan, s'il y a le temps Week-end rital, en bagnole de fortune Variété mélo à la radio",
+      "title": "Week-end à Rome",
+      "artist": "Etienne Daho",
+      "youtubeId": "RGHe5QxRIJs",
+      "start": 26,
+      "end": 56,
+      "themes": [
+        "rock-francais",
+        "variete-fr",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s042",
+      "phrase": "Le rose qu'on nous propose D'avoir les quantités d'choses Qui donnent envie d'autre chose Aïe, on nous fait croire",
+      "title": "Foule sentimentale",
+      "artist": "Alain Souchon",
+      "youtubeId": "Eoy1Iik9Ens",
+      "start": 15,
+      "end": 45,
+      "themes": [
+        "chanson-a-texte",
+        "variete-fr",
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s043",
+      "phrase": "J'ai du succès dans mes affaires. J'ai du succès dans mes amours. Je change souvent de secrétaire. J'ai mon bureau en haut d'une tour.",
+      "title": "Le blues du businessman",
+      "artist": "Starmania",
+      "youtubeId": "JxQ7Aox_rHU",
+      "start": 2,
+      "end": 32,
+      "themes": [
+        "comedie-musicale"
+      ]
+    },
+    {
+      "id": "s044",
+      "phrase": "Laisse-moi toute une nuit Faire avec toi le plus long, le plus beau voyage Oh ! Veux-tu le faire aussi ? ...",
+      "title": "Laisse moi t'aimer",
+      "artist": "Mike Brant",
+      "youtubeId": "1N1tWDdWi_c",
+      "start": 12,
+      "end": 42,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "s045",
+      "phrase": "Si on parlait d’amour, qu’est-ce que tu diras ?",
+      "title": "Chanson sur ma drôle de vie",
+      "artist": "Véronique Sanson",
+      "youtubeId": "BuISxW-0hKA",
+      "start": 24,
+      "end": 54,
+      "themes": [
+        "variete-fr",
+        "chanson-a-texte"
+      ]
+    },
+    {
+      "id": "s046",
+      "phrase": "J'ai dû rêver trop fort. Ça m'prend les jours fériés. Quand Gisèle clape dehors. J'aurais pas dû ouvrir.",
+      "title": "Vertige de l'amour",
+      "artist": "Alain Bashung",
+      "youtubeId": "S3WXldBARAc",
+      "start": 11,
+      "end": 41,
+      "themes": [
+        "rock-francais",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s047",
+      "phrase": "Et regarder les gens tant qu'y en a. Te parler du bon temps qu'est mort ou qui r'viendra.",
+      "title": "Mistral gagnant",
+      "artist": "Renaud",
+      "youtubeId": "siVDpgDXyPs",
+      "start": 11,
+      "end": 41,
+      "themes": [
+        "chanson-a-texte",
+        "variete-fr",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s048",
+      "phrase": "Où tu te caches, laisse moi deviner Dans mon coeur rien ne change T'es toujours la mon ange Il manque ton rire, a l'ennui",
+      "title": "Alter ego",
+      "artist": "Jean-Louis Aubert",
+      "youtubeId": "rgjmHQtobEg",
+      "start": 82,
+      "end": 112,
+      "themes": [
+        "rock-francais"
+      ]
+    },
+    {
+      "id": "s049",
+      "phrase": "Il ne vivait pas comme les autres, c'est tout Et pour quelles raisons étranges Les gens qui n'sont pas comme nous,",
+      "title": "Il jouait du piano debout",
+      "artist": "France Gall",
+      "youtubeId": "SEsKJ20TP9g",
+      "start": 8,
+      "end": 38,
+      "themes": [
+        "variete-fr",
+        "chanson-a-texte",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s050",
+      "phrase": "Au fond d' ta bulle Et si j' t'agace Si j'suis trop nul Je deviendrai Tout pâle, tout muet, tout p'tit",
+      "title": "Fais-moi une place",
+      "artist": "Julien Clerc",
+      "youtubeId": "sSkQZYOLCqc",
+      "start": 0,
+      "end": 30,
+      "themes": [
+        "variete-fr",
+        "chanson-a-texte"
+      ]
+    },
+    {
+      "id": "s051",
+      "phrase": "Comme une star de ciné. Accoudée au juke-box. Elle rêvait qu'elle posait. Juste pour un bout d'essai.",
+      "title": "Couleur menthe à l'eau",
+      "artist": "Eddy Michell",
+      "youtubeId": "CCYN79b6_ks",
+      "start": 0,
+      "end": 30,
+      "themes": [
+        "variete-fr",
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "s052",
+      "phrase": "Mon cœur de silex Vite prend feu Ton cœur de pyrex Résiste au feu Je suis bien perplexe,",
+      "title": "Comment te dire adieu",
+      "artist": "Françoise Hardy",
+      "youtubeId": "tINyMbNZytI",
+      "start": 32,
+      "end": 62,
+      "themes": [
+        "variete-fr",
+        "pop-classiques",
+        "chanson-a-texte"
+      ]
+    },
+    {
+      "id": "s053",
+      "phrase": "Ah Aaah Voiles sur les filles. Barques sur le. Nil Je suis dans ta vie. Je suis dans tes bras.",
+      "title": "Alexandrie Alexandra",
+      "artist": "Claude François",
+      "youtubeId": "N9s1lWR8Pjc",
+      "start": 20,
+      "end": 50,
+      "themes": [
+        "disco-francais",
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "s054",
+      "phrase": "J'ai senti le choc. Un souffle barbare. Un remous hard rock. Dès l'aérogare. J'ai changé d'époque.",
+      "title": "Nougayork",
+      "artist": "Claude Nougaro",
+      "youtubeId": "N5CtcD7mycg",
+      "start": 45,
+      "end": 75,
+      "themes": [
+        "variete-fr",
+        "chanson-a-texte"
+      ]
+    },
+    {
+      "id": "s055",
+      "phrase": "Bien intégré, quasiment New-Yorkais Dans mon building tout de verre et d’acier Je prends mon job, un rail de coke, un café",
+      "title": "Manhattan-Kaboul",
+      "artist": "Renaud et Axel Red",
+      "youtubeId": "u1Ux8RYVs-U",
+      "start": 14,
+      "end": 44,
+      "themes": [
+        "chanson-a-texte",
+        "annees-2000"
+      ]
+    },
+    {
+      "id": "s056",
+      "phrase": "Dans le cœur des enfants de 7 à 77 ans. Elle chante, elle chante, la rivière insolente Qui unit dans son lit",
+      "title": "La maladie d'amour",
+      "artist": "Michel Sardou",
+      "youtubeId": "rxoQimY9lkM",
+      "start": 22,
+      "end": 52,
+      "themes": [
+        "variete-fr",
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "s057",
+      "phrase": "Au milieu de la nuit. J'sais pas si c'est la Terre Qui tourne à l'envers. Ou bien si c'est moi.",
+      "title": "Le monde est stone",
+      "artist": "Starmania",
+      "youtubeId": "pDMmh2Lcx_A",
+      "start": 80,
+      "end": 110,
+      "themes": [
+        "comedie-musicale"
+      ]
+    },
+    {
+      "id": "s058",
+      "phrase": "Suivaient des yeux l´étoile du Berger Je te suivrai, où tu iras j´irai Fidèle comme une ombre jusqu´à destination",
+      "title": "Les Rois mages",
+      "artist": "Sheila",
+      "youtubeId": "c4zSaHFggqY",
+      "start": 8,
+      "end": 39,
+      "themes": [
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "s059",
+      "phrase": "Marie-Galante Saint-Vincent Loin Singapour Seymour Ceylan Vous c'est l'océan. Qui vous sépare. Et vous laisse à part.",
+      "title": "Belle-Île-en-Mer, Marie-Galante",
+      "artist": "Laurent Voulzy",
+      "youtubeId": "n_i6f3q9jb8",
+      "start": 4,
+      "end": 34,
+      "themes": [
+        "variete-fr",
+        "tubes-ete",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s060",
+      "phrase": "Jimmy boit du gin dans sa. Chrysler La presqu'île le boulevard de la mer est con. Comme elle est partie attention. Jimmy tourne en rond.",
+      "title": "La ballade de Jim",
+      "artist": "Alain Souchon",
+      "youtubeId": "mMOL8eEjjfg",
+      "start": 36,
+      "end": 66,
+      "themes": [
+        "chanson-a-texte",
+        "variete-fr"
+      ]
+    },
+    {
+      "id": "s061",
+      "phrase": "Is she wrong or is she right. Je ne peux plus rien y faire. Your girl is shining in the night.",
+      "title": "Magnolias for Ever",
+      "artist": "Claude François",
+      "youtubeId": "KGV0jdhKJD0",
+      "start": 20,
+      "end": 50,
+      "themes": [
+        "disco-francais"
+      ]
+    },
+    {
+      "id": "s062",
+      "phrase": "Qu'après le tombeau de Lénine On irait au café Pouchkine Boire un chocolat La place Rouge était vide Je lui pris son bras, elle a souri",
+      "title": "Nathalie",
+      "artist": "Gilbert Bécaud",
+      "youtubeId": "GIOEiiq0Kp8",
+      "start": 38,
+      "end": 68,
+      "themes": [
+        "variete-fr",
+        "chanson-a-texte",
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "s063",
+      "phrase": "Courir après Un autre toi même Pour que tu t'aimes Hey ! Qu'est-ce qui te fait nager Contre le sens du temps",
+      "title": "Juste une illusion",
+      "artist": "Jean-Louis Aubert",
+      "youtubeId": "JIoQSiJsAzs",
+      "start": 15,
+      "end": 45,
+      "themes": [
+        "rock-francais",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s064",
+      "phrase": "La terre, c'était le charbon Le ciel, c'était l'horizon Les hommes, des mineurs de fond Nos fenêtres donnaient sur des fenêtres semblables",
+      "title": "Les corons",
+      "artist": "Pierre Bachelet",
+      "youtubeId": "oI3DITQ1EcY",
+      "start": 10,
+      "end": 40,
+      "themes": [
+        "chanson-a-texte",
+        "variete-fr",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s065",
+      "phrase": "Où la Terre serait ronde. Où la lune serait blonde. Et la vie serait féconde. Je dormais à poings fermés.",
+      "title": "Un autre monde",
+      "artist": "Téléphone",
+      "youtubeId": "_pVr1CLF2rY",
+      "start": 52,
+      "end": 82,
+      "themes": [
+        "rock-francais",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s066",
+      "phrase": "Et la place. Blanche a mauvaise mine. Les camions sont pleins de lait. Les balayeurs sont pleins de balais. Il est cinq heures.",
+      "title": "Il est cinq heures, Paris s'éveille",
+      "artist": "Jacques Dutronc",
+      "youtubeId": "J8Wi6wr4bGs",
+      "start": 1,
+      "end": 31,
+      "themes": [
+        "variete-fr",
+        "rock-francais",
+        "chanson-a-texte"
+      ]
+    },
+    {
+      "id": "s067",
+      "phrase": "Dans une de ces soirées. J'ai même pas pu la r'garder. Tell'ment ses yeux me brûlaient. Alors je lui ai pris la main.",
+      "title": "Suzette",
+      "artist": "Dany Brillant",
+      "youtubeId": "0Op-tV-YzPk",
+      "start": 3,
+      "end": 33,
+      "themes": [
+        "variete-fr",
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s068",
+      "phrase": "Pourras-tu suivre là ou je vais ? Sauras-tu vivre le plus mauvais ? La solitude le temps qui passe Et l'habitude regardes-les",
+      "title": "Seras-tu là",
+      "artist": "Michel Berger",
+      "youtubeId": "0FTTscMiLJc",
+      "start": 52,
+      "end": 82,
+      "themes": [
+        "variete-fr",
+        "chanson-a-texte",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s069",
+      "phrase": "J'aurais commis moins d'erreurs, J'aurais su me rassurer, Toutes les fois que j'ai eu peur, Je me s’rais blottie au chaud,",
+      "title": "En rouge et noir",
+      "artist": "Jeanne Mas",
+      "youtubeId": "Xs3zKUsKBGI",
+      "start": 17,
+      "end": 47,
+      "themes": [
+        "variete-fr",
+        "annees-80"
+      ]
+    },
+    {
+      "id": "s070",
+      "phrase": "Des poissons ruisselants. Ils vous montrent des dents. À croquer la fortune. À décroisser la lune. À bouffer des haubans.",
+      "title": "Amsterdam",
+      "artist": "Jacques Brel",
+      "youtubeId": "45LBdEVbP-E",
+      "start": 77,
+      "end": 127,
+      "themes": [
+        "chanson-a-texte",
+        "pop-classiques"
+      ]
+    },
+    {
+      "id": "s071",
+      "phrase": "je jette un dernier regard sur ma femme, mon fils et mon domaine. Akim, le fils du forgeron est venu me chercher,",
+      "title": "La tribu de Dana",
+      "artist": "Manau",
+      "youtubeId": "UtkYBo7r23Q",
+      "start": 19,
+      "end": 49,
+      "themes": [
+        "annees-90",
+        "rap-francais"
+      ]
+    },
+    {
+      "id": "s072",
+      "phrase": "Ni égard, ni grand amour Pas même l'espoir d'être aimé Et savoir donner Donner sans reprendre Ne rien faire qu'apprendre",
+      "title": "Savoir aimer",
+      "artist": "Florent Pagny",
+      "youtubeId": "6TUnl0L0mL8",
+      "start": 30,
+      "end": 60,
+      "themes": [
+        "variete-fr",
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s073",
+      "phrase": "entonnez le tempo moi j'accorde ma basse 1, 2, 3, 4 nous faisons un vacarme de tous les diables",
+      "title": "Le Brio",
+      "artist": "Big Soul",
+      "youtubeId": "BQgFNNzR2a4",
+      "start": 0,
+      "end": 30,
+      "themes": [
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s074",
+      "phrase": "Le rose qu'on nous propose D'avoir les quantités d'choses Qui donnent envie d'autre chose Aïe, on nous fait croire",
+      "title": "Foule sentimentale",
+      "artist": "Alain Souchon",
+      "youtubeId": "Eoy1Iik9Ens",
+      "start": 15,
+      "end": 45,
+      "themes": [
+        "chanson-a-texte",
+        "variete-fr",
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s075",
+      "phrase": "Des larmes coulaient sur mon visage. Je ne savais plus comment faire. Pour trouver en moi le courage. J'ai levé les yeux au ciel.",
+      "title": "Dieu m'a donné la foi",
+      "artist": "Ophélie Winter",
+      "youtubeId": "oNCMjcG_IGE",
+      "start": 0,
+      "end": 30,
+      "themes": [
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s076",
+      "phrase": "Dans cette chambre noire, J’entends qu’on s’amuse et qu’on chante Au bout du couloir. Quelqu’un a touché le verrou",
+      "title": "La corrida",
+      "artist": "Francis Cabrel",
+      "youtubeId": "jtssC13qIsM",
+      "start": 31,
+      "end": 61,
+      "themes": [
+        "annees-90",
+        "chanson-a-texte"
+      ]
+    },
+    {
+      "id": "s077",
+      "phrase": "Au début des années 80, je me souviens des soirées Où l'ambiance était chaude et les mecs rentraient Stan Smith aux pieds le regard froid",
+      "title": "Je danse le Mia",
+      "artist": "IAM",
+      "youtubeId": "4a1-1qlhb5g",
+      "start": 4,
+      "end": 34,
+      "themes": [
+        "annees-90",
+        "rap-francais"
+      ]
+    },
+    {
+      "id": "s078",
+      "phrase": "Le jour est venu et moi aussi Mais j' veux pas être le premier. Si on avait plus rien à se dire et si et si...",
+      "title": "Place des grands hommes",
+      "artist": "Patrick Bruel",
+      "youtubeId": "eP8HEml4dgw",
+      "start": 15,
+      "end": 45,
+      "themes": [
+        "variete-fr",
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s079",
+      "phrase": "Ça n'a rien qui peut gêner la morale Là où le doute s'installe C'est que ce geste se fasse sous la table.",
+      "title": "Une femme avec une femme",
+      "artist": "Mecano",
+      "youtubeId": "TO0MsGy-oQ4",
+      "start": 0,
+      "end": 30,
+      "themes": [
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s080",
+      "phrase": "Avec mes souvenirs. Ces morceaux de passé. Comme un miroir en éclats de verre. Mais à quoi ça sert. C'que j'voulais te dire.",
+      "title": "Tu ne m'as pas laissé le temps",
+      "artist": "David Halliday",
+      "youtubeId": "kyLDvhY2yME",
+      "start": 3,
+      "end": 33,
+      "themes": [
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s081",
+      "phrase": "Sont-ils toujours un peu les mêmes. Ils ont quand ils s'en viennent. Le même regard d'un seul désir pour deux.",
+      "title": "Un homme heureux",
+      "artist": "William Sheller",
+      "youtubeId": "RBDrxeru8aE",
+      "start": 13,
+      "end": 43,
+      "themes": [
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s082",
+      "phrase": "Ah ouais! C'est vrai J'te connais par cœur, J'aimerais savoir pourquoi tu agis comme un voleur.",
+      "title": "Bye Bye",
+      "artist": "Menelik",
+      "youtubeId": "u5S1QcnPyho",
+      "start": 14,
+      "end": 44,
+      "themes": [
+        "annees-90",
+        "rap-francais"
+      ]
+    },
+    {
+      "id": "s083",
+      "phrase": "Sous des airs ou des faux semblants. J'ai cru que d'autres pas de danses. Me cacheraient aux yeux des gens.",
+      "title": "Aller Plus Haut",
+      "artist": "Tina Arena",
+      "youtubeId": "xA_iwFnnV9M",
+      "start": 22,
+      "end": 52,
+      "themes": [
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s084",
+      "phrase": "pour les hommes comme la nature faire tomber les barrières, les murs, les vieux parapets d'Arthur fallait voir imagine notre espoir",
+      "title": "Le pouvoir des fleurs",
+      "artist": "Laurent Voulzy",
+      "youtubeId": "krNRHxUPZS8",
+      "start": 14,
+      "end": 44,
+      "themes": [
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s085",
+      "phrase": "Quelques éclats de verre auraient peut-être pu nous aider Dans ce silence amer, j'ai décidé de pardonner Les erreurs qu'on peut faire à trop s'aimer",
+      "title": "Je T’aime",
+      "artist": "Lara Fabian",
+      "youtubeId": "vz0OIwXOOYE",
+      "start": 24,
+      "end": 54,
+      "themes": [
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s086",
+      "phrase": "Qu´un jour, fatigué J´aille me briser la voix Une dernière fois A cent vingt décibels Contre un grand châtaigner",
+      "title": "L'autre Finistère",
+      "artist": "Les Innocents",
+      "youtubeId": "SKAELJZjJAo",
+      "start": 8,
+      "end": 38,
+      "themes": [
+        "annees-90",
+        "rock-francais"
+      ]
+    },
+    {
+      "id": "s087",
+      "phrase": "Pour bercer tes rêves d'enfants Ensemble, on est devenu grand... De bon point en double zéro Paralysés par tant d'amour",
+      "title": "Sang pour sang",
+      "artist": "David Hallyday",
+      "youtubeId": "lIv0BKeGCCI",
+      "start": 10,
+      "end": 40,
+      "themes": [
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s088",
+      "phrase": "Pour implorer le ciel. Ensemble En une seule et même église. Retrouver l'essentiel. Et faire. Que les silences se brisent.",
+      "title": "Chanter",
+      "artist": "Florent Pagny",
+      "youtubeId": "f30s93UrwNg",
+      "start": 25,
+      "end": 55,
+      "themes": [
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s089",
+      "phrase": "Soudan mon. Soudan Pour un air démocratique. On t'casse les dents. Pour vouloir le monde parlé. Soudan mon. Soudan.",
+      "title": "C'est déjà ça",
+      "artist": "Alain Souchon",
+      "youtubeId": "bScmKvRTvS4",
+      "start": 122,
+      "end": 152,
+      "themes": [
+        "annees-90",
+        "chanson-a-texte"
+      ]
+    },
+    {
+      "id": "s090",
+      "phrase": "les gens qui courent après l'amour et qui le fuient les bras qui se lèvent pour un Dieu qu'ils ne voient pas.",
+      "title": "Vivre pour le meilleur",
+      "artist": "Johnny Hallyday",
+      "youtubeId": "d3EE9kCQrt4",
+      "start": 0,
+      "end": 30,
+      "themes": [
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s091",
+      "phrase": "Et puis je l'imagine habitant mon décor J'aurais tant à lui dire si j'avais su parler Comment lui faire lire au fond de mes pensées ?",
+      "title": "S'il suffisait d'aimer",
+      "artist": "Céline Dion",
+      "youtubeId": "Gg_3RhDlEI4",
+      "start": 7,
+      "end": 37,
+      "themes": [
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s092",
+      "phrase": "Au fond d' ta bulle Et si j' t'agace Si j'suis trop nul Je deviendrai Tout pâle, tout muet, tout p'tit",
+      "title": "Fais-moi une place",
+      "artist": "Julien Clerc",
+      "youtubeId": "sSkQZYOLCqc",
+      "start": 0,
+      "end": 30,
+      "themes": [
+        "variete-fr",
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s093",
+      "phrase": "Que seul le silence s'impose Puisqu'il revient à qui de droit De tenter les métamorphoses Puisque les révolutions,",
+      "title": "Temps à nouveau",
+      "artist": "Jean-Louis Aubert",
+      "youtubeId": "yBGT_aqb5TU",
+      "start": 11,
+      "end": 41,
+      "themes": [
+        "annees-90",
+        "rock-francais"
+      ]
+    },
+    {
+      "id": "s094",
+      "phrase": "Sauter à l'élastique. Voleur d'amphores. Au fond des criques. J'ai fait la cour à des murènes. J'ai fait l'amour.",
+      "title": "La nuit je mens",
+      "artist": "Alain Bashung",
+      "youtubeId": "HTAXAjkVhxs",
+      "start": 0,
+      "end": 30,
+      "themes": [
+        "annees-90",
+        "rock-francais"
+      ]
+    },
+    {
+      "id": "s095",
+      "phrase": "Au dessus de la rivière. Je rangeais mes cannes. On ne voyait plus que du feu. Je l'ai vue s'approcher.",
+      "title": "La cabane du pêcheur",
+      "artist": "Francis Cabrel",
+      "youtubeId": "6cRrepWv1rg",
+      "start": 23,
+      "end": 53,
+      "themes": [
+        "annees-90",
+        "chanson-a-texte"
+      ]
+    },
+    {
+      "id": "s096",
+      "phrase": "Que demain revienne encore Loin des villes soumises, on suivra l’autoroute Ensuite on perdra tous les nords On laissera nos clés, nos cartes et nos codes",
+      "title": "On ira",
+      "artist": "Jean-Jacques Goldman",
+      "youtubeId": "pTM6jip-QDQ",
+      "start": 14,
+      "end": 44,
+      "themes": [
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s097",
+      "phrase": "ou pro-gram-me-moi sur I. B.-M. Je n'aim'rai pas le ble-sser Je m'rends compte que pour compte",
+      "title": "Dis-Lui Toi Que Je T'Aime",
+      "artist": "Vanessa Paradis",
+      "youtubeId": "uYgHlYhO90U",
+      "start": 18,
+      "end": 48,
+      "themes": [
+        "annees-90"
+      ]
+    },
+    {
+      "id": "s098",
+      "phrase": "Paris la belle en l'an de Dieu Mil quatre cent quatre-vingt-deux Histoire d'amour et de désir.",
+      "title": "Le temps des cathédrales",
+      "artist": "Notre Dame de Paris",
+      "youtubeId": "lmCLxgkJTz0",
+      "start": 0,
+      "end": 30,
+      "themes": [
+        "comedie-musicale",
+        "annees-90"
+      ]
+    }
+  ]
+}
